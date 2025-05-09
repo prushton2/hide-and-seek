@@ -3,18 +3,11 @@
 }
 
 .container {
-    /* border: 1px solid red; */
-    flex-basis: 0%;
-
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-}
-
-.map {
-    display: flex;
     flex-basis: 0%;
-    flex-grow: 4;
+    /* border: 1px solid red; */
 }
 
 .questionCategoryContainer {
@@ -38,6 +31,11 @@
     flex-direction: column;
     flex-basis: 0%;
     flex-grow: 4;
+    width: 20%;
+    color: white;
+    margin: 1%;
+    border: 1px solid #101010;
+    background-color: #141414;
 }
 
 .questionCategory {    
@@ -49,7 +47,7 @@
     padding: 2px;
 
     border: 5px solid #101010;
-    background-color: 5px solid #141414;
+    background-color: #141414;
     border-radius: 10px;
     color: white;
     font-size: xx-large;

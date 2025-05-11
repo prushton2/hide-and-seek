@@ -14,7 +14,7 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 func getHello(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("got /hello request\n")
 
-	getTentacleBox(Vector2{X: -71.061905, Y: 42.365771}, Vector2{X: -71.060516, Y: 42.355477})
+	boxFarPoint(Vector2{X: -71.033, Y: 42.375}, Vector2{X: -71.060516, Y: 42.355477})
 
 	
 	io.WriteString(w, "Hello, HTTP!\n")

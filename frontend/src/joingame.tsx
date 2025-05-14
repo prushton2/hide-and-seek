@@ -6,8 +6,6 @@ import './App.css'
 function App() {
   const [count, setCount] = useState(0)
 
-
-
   return (
     <>
       <div>
@@ -19,11 +17,33 @@ function App() {
         </a>
       </div>
       <h1>Join Game</h1>
+      <div className='card'>
+        <input
+          type="number"
+          placeholder="Game Code"
+          onChange={(e) => {
+            localStorage.setItem("code", e.target.value)
+          }}
+          defaultValue={
+            "" + localStorage.getItem("code")
+          }
+        />
+        <input
+          type="number"
+          placeholder="Player Number"
+          onChange={(e) => {
+            localStorage.setItem("no", e.target.value)
+          }}
+          defaultValue={
+            "" + localStorage.getItem("no")
+          }
+        />
+      </div>
       <div className="card">
-        <button onClick={() => window.location.href = "/hider"}>
+        <button onClick={() => {localStorage.setItem("team", "hider");  window.location.href = "/hider"}}>
           Hider
         </button>
-        <button onClick={() => window.location.href = "/seeker"}>
+        <button onClick={() => {localStorage.setItem("team", "seeker"); window.location.href = "/seeker"}}>
           Seeker
         </button>
         <p>

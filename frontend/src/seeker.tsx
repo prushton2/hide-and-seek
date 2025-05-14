@@ -7,61 +7,55 @@ function Questions() {
   const[questionCategory, setQuestionCategory] = useState<string>("");
   
   function renderQuestion(question: question) {
-    return <>
-      <button className="question" key={question.id} onClick={(e) => {if(question.id == "back") {setQuestionCategory("")} else {console.log(question.id)}}}>
-        {/* <img src={question.icon} className="questionIcon"/> */}
+    return <button className="question" key={question.id} onClick={(e) => {if(question.id == "back") {setQuestionCategory("")} else {console.log(question.id)}}}>
         <div className="questionName">{question.name}</div>
-        {/* <div className="questionId">{question.id}</div> */}
       </button>
-    </>
   }
   function renderQuestionBox() {
-    switch (questionCategory) {
-      case "":
-        return <div className="questionCategoryContainer">
+
+    if(questionCategory == "") {
+      return <div className="questionCategoryContainer">
           <button 
             className="questionCategory" 
-            onClick={() => setQuestionCategory("Matching")}>
+            onClick={() => setQuestionCategory("matching")}>
             Matching
           </button>
           <button 
             className="questionCategory" 
-            onClick={() => setQuestionCategory("Measuring")}>
+            onClick={() => setQuestionCategory("measuring")}>
             Measuring
           </button>
           <button 
             className="questionCategory" 
-            onClick={() => setQuestionCategory("Thermometer")}>
+            onClick={() => setQuestionCategory("thermometer")}>
             Thermometer
           </button>
           <button 
             className="questionCategory" 
-            onClick={() => setQuestionCategory("Radar")}>
+            onClick={() => setQuestionCategory("radar")}>
             Radar
           </button>
           <button 
             className="questionCategory" 
-            onClick={() => setQuestionCategory("Tentacles")}>
+            onClick={() => setQuestionCategory("tentacles")}>
             Tentacles
           </button>
           <button 
             className="questionCategory" 
-            onClick={() => setQuestionCategory("Photos")}>
+            onClick={() => setQuestionCategory("photos")}>
             Photos
           </button>
         </div>
-      default:
-        return <div className="questionContainer">
-          {
-          [renderQuestion({name: "Back", id: "back", icon: ""} as question)].concat(
-            questions[questionCategory].map(
-              (e: question) => {
-                return renderQuestion(e)
-                }
-              )
-            )
-          }
-        </div>
+    } else {
+      return <div className="questionContainer">
+        {
+        [renderQuestion({name: "Back", id: "back", icon: ""} as question)].concat(
+            Object.entries(questions)
+              .filter((e: [string, question]) => e[0].startsWith(questionCategory))
+              .map((e: [string, question]) => {return renderQuestion(e[1])})
+          )
+        }
+      </div>
     }
   }
 

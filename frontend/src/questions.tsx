@@ -4,44 +4,35 @@ export interface question {
     icon: string
 };
 
-export const questions: { [key: string]: question[] } = {
-    "Matching": [
-        {
-            name: "Same Train Station",
-            id: "matching-trainstation",
-            icon: ""
-        },
-        {
-            name: "Same Airport",
-            id: "matching-airport",
-            icon: ""
-        },
-        {
-            name: "Same Hospital",
-            id: "matching-hospital",
-            icon: ""
-        },
-        {
-            name: "Same Coastline",
-            id: "matching-coastline",
-            icon: ""
-        }
-    ],
-    "Measuring": [
-        {
-            name: "Hospital",
-            id: "measure-hospital",
-            icon: ""
-        }
-    ],
-    "Thermometer": [
-        {
-            name: "4 min",
-            id: "thermometer-4min",
-            icon: ""
-        }
-    ],
-    "Radar": [],
-    "Tentacles": [],
-    "Photos": []
+export const questions: { [key: string]: question } = {
+    "matching-trainstation": {
+        name: "Same Train Station",
+        id: "matching-trainstation",
+        icon: ""
+    },
+    "matching-hospital": {
+        name: "Same Hospital",
+        id: "matching-hospital",
+        icon: ""
+    },
+    "matching-coastline": {
+        name: "Same Coastline",
+        id: "matching-coastline",
+        icon: ""
+    },
+    "measure-hospital": {
+        name: "Hospital",
+        id: "measure-hospital",
+        icon: ""
+    },
+    "thermometer-4min": {
+        name: "4 min",
+        id: "thermometer-4min",
+        icon: ""
+    },
+    "tentacles-mcdonalds": {
+        name: "McDonalds",
+        id: "tentacles-mcdonalds",
+        icon: ""
+    }
 };

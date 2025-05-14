@@ -1,5 +1,21 @@
 package lib
 
+type Game struct {
+	Id             string     `json:"id"`
+	AskedQuestions [64]string `json:"askedQuestions"`
+	Shapes         [512]Shape `json:"shapes"`
+	Hiderspos      [8]Vector2 `json:"hiderspos"`
+	Seekerspos     [8]Vector2 `json:"seekerspos"`
+}
+
+type GameInfo struct {
+	Games map[string]Game `json:"games"`
+}
+
+type Shape struct {
+	Vertices [32]Vector2 `json:"vertices"`
+}
+
 type Vector2 struct {
 	X float64 `json:"X"`
 	Y float64 `json:"Y"`
@@ -74,7 +90,7 @@ func doIntersect(p1, q1, p2, q2 Vector2) bool {
 	return false
 }
 
-func boxFarPoint(close, far Vector2) []Vector2 {
+func BoxFarPoint(close, far Vector2) []Vector2 {
 	close = convertLatLongAndXY(close)
 	far = convertLatLongAndXY(far)
 
@@ -137,10 +153,10 @@ func boxFarPoint(close, far Vector2) []Vector2 {
 
 	for i := 0; i < len(corners); i++ {
 		if corners[i] == tanSegment[0] || corners[i] == tanSegment[1] {
-			shape = append(shape, corners[i])
+			shape = append(shape, convertLatLongAndXY(corners[i]))
 		}
 		if !doIntersect(far, corners[i], tanSegment[0], tanSegment[1]) {
-			shape = append(shape, corners[i])
+			shape = append(shape, convertLatLongAndXY(corners[i]))
 		}
 	}
 

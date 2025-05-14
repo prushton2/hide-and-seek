@@ -2,23 +2,11 @@ package main
 
 import (
 	"encoding/json" // Or "encoding/gob" for binary encoding
-	"fmt"
 	"hideandseek/lib"
 	"io"
 	"net/http"
 	"net/url"
 )
-
-type Game struct {
-	Id             string         `json:"id"`
-	AskedQuestions [64]string     `json:"askedQuestions"`
-	Hiderspos      [8]lib.Vector2 `json:"hiderspos"`
-	Seekerspos     [8]lib.Vector2 `json:"seekerspos"`
-}
-
-type GameInfo struct {
-	Games map[string]Game `json:"games"`
-}
 
 type UpdateInfo struct {
 	Id   string      `json:"id"`
@@ -27,7 +15,11 @@ type UpdateInfo struct {
 	Pos  lib.Vector2 `json:"pos"`
 }
 
-var Games map[string]Game = map[string]Game{}
+type Request struct {
+	Id string `json:"id"`
+}
+
+var Games map[string]lib.Game = map[string]lib.Game{}
 
 func update(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
@@ -50,7 +42,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 	_, exists := Games[parsedBody.Id]
 
 	if !exists {
-		Games[parsedBody.Id] = Game{
+		Games[parsedBody.Id] = lib.Game{
 			Id:             parsedBody.Id,
 			AskedQuestions: [64]string{},
 			Hiderspos:      [8]lib.Vector2{},
@@ -74,34 +66,30 @@ func update(w http.ResponseWriter, r *http.Request) {
 func ask(w http.ResponseWriter, r *http.Request) {
 	m, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
-		io.WriteString(w, "err")
+		io.WriteString(w, "erra")
 		return
 	}
-	// fmt.Printf(m.Get("q"))
-
-	// fmt.Printf("\n\n")
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		io.WriteString(w, "err")
+		io.WriteString(w, "errb")
+		return
+	}
 
+	var parsedBody Request
+	err = json.Unmarshal(body, &parsedBody)
+	if err != nil {
+		io.WriteString(w, "errc")
 		return
 	}
 
 	defer r.Body.Close()
 
-	fmt.Printf("%v\n", string(body))
+	shapes := askQuestion(Games[parsedBody.Id], m.Get("q"))
 
-	askQuestion(m.Get("q"))
+	encoded, _ := json.Marshal(shapes)
 
-	// var shape []lib.Vector2 = boxFarPoint(
-	// 	lib.Vector2{X: 42.366164, Y: -71.062419},
-	// 	lib.Vector2{X: 42.361376, Y: -71.071628},
-	// );
-
-	// for i := 0; i < len(shape); i++ {
-	// 	io.WriteString(w, fmt.Sprintf("[%f, %f], ", shape[i].X, shape[i].Y));
-	// }
+	io.Writer.Write(w, encoded)
 }
 
 func main() {

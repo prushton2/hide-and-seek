@@ -4,17 +4,15 @@ type Game struct {
 	Id             string      `json:"id"`
 	AskedQuestions []string    `json:"askedQuestions"`
 	Hiderspos      []Vector2   `json:"hiderspos"`
+	Hiderpos       Vector2     `json:"hiderpos"`
 	Seekerspos     []Vector2   `json:"seekerspos"`
+	Seekerpos      Vector2     `json:"seekerpos"`
 	Shapes         [][]Vector2 `json:"shapes"`
 }
 
 type GameInfo struct {
 	Games map[string]Game `json:"games"`
 }
-
-// type Shape struct {
-// 	Vertices []Vector2 `json:"vertices"`
-// }
 
 type Vector2 struct {
 	X float64 `json:"X"`
@@ -23,6 +21,16 @@ type Vector2 struct {
 
 func convertLatLongAndXY(p Vector2) Vector2 {
 	return Vector2{p.Y, p.X}
+}
+
+func AverageNPoints(points []Vector2) Vector2 {
+	var sumX, sumY float64
+	for _, point := range points {
+		sumX += point.X
+		sumY += point.Y
+	}
+	count := float64(len(points))
+	return Vector2{X: sumX / count, Y: sumY / count}
 }
 
 // -71.269668 < long < -70.621710

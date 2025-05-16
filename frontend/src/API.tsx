@@ -7,6 +7,9 @@ interface updateResponse {
     askedQuestions: string[],
     shapes: {X: number, Y: number}[][]
     hiderspos: {X: number, Y: number}[]
+    hiderpos: {X: number, Y: number}
+    seekerspos: {X: number, Y: number}[]
+    seekerpos: {X: number, Y: number}
 }
 
 

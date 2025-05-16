@@ -54,7 +54,9 @@ func update(w http.ResponseWriter, r *http.Request) {
 			Id:             parsedBody.Id,
 			AskedQuestions: []string{},
 			Hiderspos:      []lib.Vector2{},
+			Hiderpos:       lib.Vector2{},
 			Seekerspos:     []lib.Vector2{},
+			Seekerpos:      lib.Vector2{},
 			Shapes:         [][]lib.Vector2{},
 		}
 	}
@@ -64,12 +66,14 @@ func update(w http.ResponseWriter, r *http.Request) {
 			game.Hiderspos = append(game.Hiderspos, make([]lib.Vector2, parsedBody.No-len(game.Hiderspos)+1)...)
 		}
 		game.Hiderspos[parsedBody.No] = parsedBody.Pos
+		game.Hiderpos = lib.AverageNPoints(game.Hiderspos)
 		Games[parsedBody.Id] = game
 	} else if parsedBody.Team == "seekers" {
 		if parsedBody.No >= len(game.Seekerspos) {
 			game.Seekerspos = append(game.Seekerspos, make([]lib.Vector2, parsedBody.No-len(game.Seekerspos)+1)...)
 		}
 		game.Seekerspos[parsedBody.No] = parsedBody.Pos
+		game.Seekerpos = lib.AverageNPoints(game.Seekerspos)
 		Games[parsedBody.Id] = game
 	}
 

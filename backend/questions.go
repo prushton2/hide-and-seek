@@ -24,7 +24,7 @@ func tentacles(ctx lib.Game, location string) [][]lib.Vector2 {
 	var closest int = 0
 	var closestDist float64 = -1.0
 	for i := 0; i < len(allLocations); i++ {
-		var relDist float64 = math.Pow(ctx.Hiderspos[0].X-allLocations[i].X, 2) + math.Pow(allLocations[i].X-allLocations[i].X, 2)
+		var relDist float64 = math.Pow(ctx.Hiderpos.X-allLocations[i].X, 2) + math.Pow(ctx.Hiderpos.Y-allLocations[i].Y, 2)
 		// fmt.Printf("Closest distance: %v; Relative Distance: %v\n", closestDist, relDist)
 		if relDist < closestDist || i == 0 {
 			// fmt.Printf("Overtook; closest was %d now %d\n", closest, i)

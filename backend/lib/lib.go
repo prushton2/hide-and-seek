@@ -1,20 +1,20 @@
 package lib
 
 type Game struct {
-	Id             string     `json:"id"`
-	AskedQuestions [64]string `json:"askedQuestions"`
-	Shapes         [512]Shape `json:"shapes"`
-	Hiderspos      [8]Vector2 `json:"hiderspos"`
-	Seekerspos     [8]Vector2 `json:"seekerspos"`
+	Id             string      `json:"id"`
+	AskedQuestions []string    `json:"askedQuestions"`
+	Hiderspos      []Vector2   `json:"hiderspos"`
+	Seekerspos     []Vector2   `json:"seekerspos"`
+	Shapes         [][]Vector2 `json:"shapes"`
 }
 
 type GameInfo struct {
 	Games map[string]Game `json:"games"`
 }
 
-type Shape struct {
-	Vertices [32]Vector2 `json:"vertices"`
-}
+// type Shape struct {
+// 	Vertices []Vector2 `json:"vertices"`
+// }
 
 type Vector2 struct {
 	X float64 `json:"X"`
@@ -95,15 +95,15 @@ func BoxFarPoint(close, far Vector2) []Vector2 {
 	far = convertLatLongAndXY(far)
 
 	bounds := []Vector2{
-		Vector2{X: -71.269668, Y: -70.621710}, // left to right
-		Vector2{X: 42.203745, Y: 42.526848},   // bottom to top
+		{X: -71.269668, Y: -70.621710}, // left to right
+		{X: 42.203745, Y: 42.526848},   // bottom to top
 	}
 
 	corners := []Vector2{
-		Vector2{X: bounds[0].Y, Y: bounds[1].Y}, // top right
-		Vector2{X: bounds[0].Y, Y: bounds[1].X}, // bottom right
-		Vector2{X: bounds[0].X, Y: bounds[1].X}, // bottom left
-		Vector2{X: bounds[0].X, Y: bounds[1].Y}, // top left
+		{X: bounds[0].Y, Y: bounds[1].Y}, // top right
+		{X: bounds[0].Y, Y: bounds[1].X}, // bottom right
+		{X: bounds[0].X, Y: bounds[1].X}, // bottom left
+		{X: bounds[0].X, Y: bounds[1].Y}, // top left
 	}
 
 	midpoint := Vector2{
@@ -154,6 +154,7 @@ func BoxFarPoint(close, far Vector2) []Vector2 {
 	for i := 0; i < len(corners); i++ {
 		if corners[i] == tanSegment[0] || corners[i] == tanSegment[1] {
 			shape = append(shape, convertLatLongAndXY(corners[i]))
+			continue
 		}
 		if !doIntersect(far, corners[i], tanSegment[0], tanSegment[1]) {
 			shape = append(shape, convertLatLongAndXY(corners[i]))

@@ -90,13 +90,7 @@ function Seeker() {
         newShapes[i][j] = [response.shapes[i][j].X, response.shapes[i][j].Y]
       }
     }
-    // console.log(newShapes)
     setShapes(newShapes)
-    try {
-      setHider([response.hiderpos.X, response.hiderpos.Y])
-    } catch {
-      setHider([0,0])
-    }
 
     try {
       setSeeker([response.seekerpos.X, response.seekerpos.Y])

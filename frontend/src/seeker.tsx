@@ -1,13 +1,22 @@
 import './seeker.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Map from './map.tsx'
 import { questions, type question } from './questions.tsx'
+import { update, ask } from "./API.tsx"
+
 
 function Questions() {
-  const[questionCategory, setQuestionCategory] = useState<string>("");
-  
+  const [questionCategory, setQuestionCategory] = useState<string>("");
+
   function renderQuestion(question: question) {
-    return <button className="question" key={question.id} onClick={(e) => {if(question.id == "back") {setQuestionCategory("")} else {console.log(question.id)}}}>
+    return <button className="question" key={question.id} onClick={(e) => {
+          if(question.id == "back") {
+            setQuestionCategory("")
+          } else {
+            console.log(question.id)
+            ask(question.id, {"a": "b"})
+          }
+        }}>
         <div className="questionName">{question.name}</div>
       </button>
   }
@@ -49,7 +58,7 @@ function Questions() {
     } else {
       return <div className="questionContainer">
         {
-        [renderQuestion({name: "Back", id: "back", icon: ""} as question)].concat(
+          [renderQuestion({name: "Back", id: "back", icon: ""} as question)].concat(
             Object.entries(questions)
               .filter((e: [string, question]) => e[0].startsWith(questionCategory))
               .map((e: [string, question]) => {return renderQuestion(e[1])})
@@ -63,13 +72,38 @@ function Questions() {
 }
 
 function Seeker() {
-  
+  const [shapes, setShapes] = useState<number[][][]>([[[]]]);
+  const [hider, setHider] = useState<number[]>([0,0]);
 
+  async function updateQuestions() {
+    let response = await update()
 
+    let newShapes: number[][][] = []
+    if(response.shapes == null) {
+      response.shapes = [[]]
+    }
+    for(let i = 0; i < response.shapes.length; i++) {
+      newShapes.push([])
+      for(let j = 0; j < response.shapes[i].length; j++) {
+        newShapes[i][j] = [response.shapes[i][j].X, response.shapes[i][j].Y]
+      }
+    }
+    // console.log(newShapes)
+    setShapes(newShapes)
+    try {
+      setHider([response.hiderspos[0].X, response.hiderspos[0].Y])
+    } catch {
+      setHider([0,0])
+    }
+  }
+
+  useEffect(() => {
+    setInterval(updateQuestions, 15000);
+  }, [])
 
   return (
     <div className="container">
-      <Map />
+      <Map shapes={shapes} hider={hider} seeker={[0,0]}/>
       <Questions />
     </div>
   )

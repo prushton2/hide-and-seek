@@ -5,3 +5,10 @@
     height: 50vh;
     background-color: "black";
 }
+
+.polygon-blend-mode {
+    /* Experiment with different blend modes to find the desired effect */
+    /* Common options include: multiply, screen, overlay, darken, lighten */
+    color: red;
+    mix-blend-mode: overlay;
+}

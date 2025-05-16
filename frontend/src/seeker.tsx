@@ -14,7 +14,7 @@ function Questions({callback}: {callback: (question: string) => void}) {
             setQuestionCategory("")
           } else {
             console.log(question.id)
-            await ask(question.id, {"a": "b"})
+            await ask(question.id)
             callback(question.id)
           }
         }}>

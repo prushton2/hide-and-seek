@@ -13,10 +13,9 @@ interface updateResponse {
 }
 
 
-export function ask(question: string, parameters: {}) {
+export function ask(question: string) {
     return axios.post(`${backend_url}/ask?q=${question}`, {
         id: localStorage.getItem("code"),
-        parameters: parameters,
     });
 }
 

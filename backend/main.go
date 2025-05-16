@@ -61,14 +61,14 @@ func update(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if parsedBody.Team == "hiders" {
+	if parsedBody.Team == "hiders" && parsedBody.No != -1 {
 		if parsedBody.No >= len(game.Hiderspos) {
 			game.Hiderspos = append(game.Hiderspos, make([]lib.Vector2, parsedBody.No-len(game.Hiderspos)+1)...)
 		}
 		game.Hiderspos[parsedBody.No] = parsedBody.Pos
 		game.Hiderpos = lib.AverageNPoints(game.Hiderspos)
 		Games[parsedBody.Id] = game
-	} else if parsedBody.Team == "seekers" {
+	} else if parsedBody.Team == "seekers" && parsedBody.No != -1 {
 		if parsedBody.No >= len(game.Seekerspos) {
 			game.Seekerspos = append(game.Seekerspos, make([]lib.Vector2, parsedBody.No-len(game.Seekerspos)+1)...)
 		}

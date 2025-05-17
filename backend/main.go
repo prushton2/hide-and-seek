@@ -128,7 +128,7 @@ func ask(w http.ResponseWriter, r *http.Request) {
 
 	game := askQuestion(Games[parsedBody.Id], m.Get("q"))
 
-	// game.AskedQuestions = append(game.AskedQuestions, m.Get("q"))
+	game.AskedQuestions = append(game.AskedQuestions, m.Get("q"))
 	Games[parsedBody.Id] = game
 
 	io.WriteString(w, "{}")

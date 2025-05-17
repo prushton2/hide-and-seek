@@ -1,9 +1,9 @@
 import './seeker.css'
 import { useEffect, useState } from 'react'
-import Map from './map.tsx'
-import { questions, type question } from './questions.tsx'
-import { update, ask } from "./API.tsx"
-import type { Shapes } from './interface.ts'
+import Map from './components/map.tsx'
+import { questions, type question } from './lib/questions.tsx'
+import { update, ask } from "./lib/API.tsx"
+import type { Shapes } from './lib/interface.ts'
 
 
 function Questions({callback}: {callback: (question: string) => void}) {

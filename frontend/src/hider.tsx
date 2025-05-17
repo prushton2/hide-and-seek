@@ -1,30 +1,20 @@
 import './seeker.css'
 import { useEffect, useState } from 'react'
-import Map from './map.tsx'
-import { update } from "./API.tsx"
-
+import Map from './components/map.tsx'
+import { update } from "./lib/API.tsx"
+import type { Shapes } from './lib/interface.ts'
 
 
 function Hider() {
-  const [shapes, setShapes] = useState<number[][][]>([[[]]]);
   const [hider, setHider] = useState<number[]>([0,0]);
+  const [shapes, setShapes] = useState<Shapes>();
   const [seeker, setSeeker] = useState<number[]>([0,0]);
-
+  
   async function updateQuestions() {
     let response = await update()
-
-    let newShapes: number[][][] = []
-    if(response.shapes == null) {
-      response.shapes = [[]]
-    }
-    for(let i = 0; i < response.shapes.length; i++) {
-      newShapes.push([])
-      for(let j = 0; j < response.shapes[i].length; j++) {
-        newShapes[i][j] = [response.shapes[i][j].X, response.shapes[i][j].Y]
-      }
-    }
-    // console.log(newShapes)
-    setShapes(newShapes)
+  
+    setShapes(response.shapes);
+      
     try {
       setHider([response.hiderpos.X, response.hiderpos.Y])
     } catch {

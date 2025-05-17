@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { UpdateResponse } from './interface'; 
+import type { UpdateResponse } from '../lib/interface'; 
 
 let backend_url = "http://localhost:3333"
 

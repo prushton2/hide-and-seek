@@ -4,7 +4,7 @@ import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, CircleMarker, R
 import { Icon } from 'leaflet';
 import hidericon from "./assets/H.png"
 import seekericon from "./assets/S.png"
-import type { Shapes } from "./interface";
+import type { Shapes } from "../lib/interface";
 
 
 function Map({shapes, hider, seeker}: {shapes: Shapes | undefined, hider: number[], seeker: number[]}) {

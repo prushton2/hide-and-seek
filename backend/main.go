@@ -45,12 +45,10 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	// fmt.Printf("%v\n", parsedBody)
-
 	game, exists := Games[parsedBody.Id]
 
 	if !exists {
-		Games[parsedBody.Id] = lib.Game{
+		game = lib.Game{
 			Id:             parsedBody.Id,
 			AskedQuestions: []string{},
 			Hiderspos:      []lib.Vector2{},
@@ -60,6 +58,8 @@ func update(w http.ResponseWriter, r *http.Request) {
 			Shapes:         lib.Shapes{},
 		}
 	}
+
+	Games[parsedBody.Id] = game
 
 	if parsedBody.Team == "hiders" && parsedBody.No != -1 {
 		if parsedBody.No >= len(game.Hiderspos) {
@@ -102,8 +102,6 @@ func ask(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "{}")
 		return
 	}
-
-	// fmt.Printf("Body %s\n", string(body))
 
 	var parsedBody Request
 

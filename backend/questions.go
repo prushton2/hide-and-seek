@@ -5,6 +5,8 @@ import (
 	"hideandseek/globals"
 	"hideandseek/lib"
 	"math"
+	"strconv"
+	"strings"
 )
 
 func askQuestion(ctx lib.Game, id string) lib.Game {
@@ -12,17 +14,28 @@ func askQuestion(ctx lib.Game, id string) lib.Game {
 	case "tentacles-mcdonalds":
 		polygons := tentacles(ctx, "mcdonalds")
 		ctx.Shapes.Polygons = append(ctx.Shapes.Polygons, polygons...)
-		break
 
+	case "radar-0.5mi":
+		fallthrough
 	case "radar-1mi":
-		FullHighlight, circle := radar(ctx, lib.FeetToMeters(5280))
+		fallthrough
+	case "radar-3mi":
+		fallthrough
+	case "radar-5mi":
+		fallthrough
+	case "radar-10mi":
+		fallthrough
+	case "radar-25mi":
+		fallthrough
+	case "radar-50mi":
+		fmt.Println("Radar")
+		distance, _ := strconv.ParseFloat(strings.Split(strings.Split(id, "-")[1], "m")[0], 64)
+		FullHighlight, circle := radar(ctx, int(distance*float64(lib.FeetToMeters(5280))))
 		ctx.Shapes.FullHighlight = ctx.Shapes.FullHighlight || FullHighlight
 		ctx.Shapes.Circles = append(ctx.Shapes.Circles, circle)
-		break
 
 	default:
 		fmt.Printf("Fake question, ignoring")
-		break
 	}
 	return ctx
 }

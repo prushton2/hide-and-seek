@@ -19,23 +19,16 @@ func askQuestion(ctx lib.Game, id string) lib.Game {
 		fallthrough
 	case "radar-1mi":
 		fallthrough
+	case "radar-2mi":
+		fallthrough
 	case "radar-3mi":
-		fallthrough
-	case "radar-5mi":
-		fallthrough
-	case "radar-10mi":
-		fallthrough
-	case "radar-25mi":
-		fallthrough
-	case "radar-50mi":
-		fmt.Println("Radar")
 		distance, _ := strconv.ParseFloat(strings.Split(strings.Split(id, "-")[1], "m")[0], 64)
 		FullHighlight, circle := radar(ctx, int(distance*float64(lib.FeetToMeters(5280))))
 		ctx.Shapes.FullHighlight = ctx.Shapes.FullHighlight || FullHighlight
 		ctx.Shapes.Circles = append(ctx.Shapes.Circles, circle)
 
 	default:
-		fmt.Printf("Fake question, ignoring")
+		fmt.Printf("Fake question, ignoring %s\n", id)
 	}
 	return ctx
 }

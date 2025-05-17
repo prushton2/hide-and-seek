@@ -29,13 +29,13 @@ function Map({shapes, hider, seeker}: {shapes: number[][][], hider: number[], se
   return (
     <MapContainer center={[42.36041830331139, -71.0580009624248]} zoom={13} className='map' >
       <TileLayer url="https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"/>
-      <Marker icon={hiderIcon} position={hider} />
-      <Marker icon={seekerIcon} position={seeker} />
+      <Marker icon={hiderIcon} position={hider as any} />
+      <Marker icon={seekerIcon} position={seeker as any} />
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
         {shapes.map((e, i) => {
           return <Polygon
             key={i}
-            positions={e}
+            positions={e as any}
             pathOptions={shadedOptions}
           />
         })}

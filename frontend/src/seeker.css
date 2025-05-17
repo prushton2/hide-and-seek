@@ -7,7 +7,6 @@
     flex-direction: column;
     flex-wrap: nowrap;
     flex-basis: 0%;
-    /* border: 1px solid red; */
 }
 
 .questionCategoryContainer {
@@ -31,7 +30,7 @@
     flex-direction: column;
     flex-basis: 0%;
     flex-grow: 4;
-    
+
     aspect-ratio: 1 / 1;
     color: white;
     margin: 1%;

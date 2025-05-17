@@ -14,9 +14,18 @@ interface updateResponse {
 
 
 export function ask(question: string) {
-    return axios.post(`${backend_url}/ask?q=${question}`, {
-        id: localStorage.getItem("code"),
-    });
+    let res
+    try {
+        res = axios.post(`${backend_url}/ask?q=${question}`, {
+            id: localStorage.getItem("code"),
+            pos: {
+                X: 0,
+                Y: 0
+            }
+        });
+    } catch (e) {
+        console.error("Error occurred while making the request:", e);
+    }
 }
 
 export async function update(): Promise<updateResponse> {

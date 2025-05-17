@@ -3,14 +3,16 @@ export interface Vector2 {
     Y: number
 }
 
+export interface Circle {
+    shaded: boolean
+    center: Vector2, 
+    radius: number
+}
+
 export interface Shapes {
     fullHighlight: boolean
     polygons: Vector2[][]
-    circles: {
-        shaded: boolean
-        center: Vector2, 
-        radius: number
-    }[]
+    circles: Circle[]
 }
 
 export interface UpdateResponse {

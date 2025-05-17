@@ -34,5 +34,10 @@ export const questions: { [key: string]: question } = {
         name: "McDonalds",
         id: "tentacles-mcdonalds",
         icon: ""
+    },
+    "radar-1mi": {
+        name: "1 Mile Radar",
+        id: "radar-1mi",
+        icon: ""
     }
 };

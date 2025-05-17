@@ -3,16 +3,12 @@ import type { UpdateResponse } from '../lib/interface';
 
 let backend_url = "http://localhost:3333"
 
-export function ask(question: string) {
+export async function ask(question: string) {
     let res
     try {
-        res = axios.post(`${backend_url}/ask?q=${question}`, {
-            id: localStorage.getItem("code"),
-            pos: {
-                X: 0,
-                Y: 0
-            }
-        });
+        res = await axios.post(`${backend_url}/ask?q=${question}`, JSON.stringify({
+            id: localStorage.getItem("code")+"",
+        }));
     } catch (e) {
         console.error("Error occurred while making the request:", e);
     }

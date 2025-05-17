@@ -1,9 +1,9 @@
 import "./map.css";
 import 'leaflet/dist/leaflet.css';
-import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, CircleMarker, Rectangle, LayerGroup} from 'react-leaflet';
+import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, Rectangle} from 'react-leaflet';
 import { Icon } from 'leaflet';
-import hidericon from "./assets/H.png"
-import seekericon from "./assets/S.png"
+import hidericon from "../assets/H.png"
+import seekericon from "../assets/S.png"
 import type { Shapes } from "../lib/interface";
 
 
@@ -66,7 +66,7 @@ function Map({shapes, hider, seeker}: {shapes: Shapes | undefined, hider: number
         {shapes.polygons == null ? <></> : shapes.polygons.map((e, i) => {
           return <Polygon
             key={`polygon ${i}`}
-            positions={e as any}
+            positions={e.map((e) => { return [e.X, e.Y] })}
             pathOptions={shaded}
           />
         })}

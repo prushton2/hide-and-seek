@@ -89,13 +89,15 @@ func ask(w http.ResponseWriter, r *http.Request) {
 
 	m, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
-		io.WriteString(w, "err a")
+		http.Error(w, "Error reading querystring", http.StatusInternalServerError)
+		io.WriteString(w, "{}")
 		return
 	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		io.WriteString(w, "err b")
+		http.Error(w, "Error reading body", http.StatusInternalServerError)
+		io.WriteString(w, "{}")
 		return
 	}
 
@@ -103,16 +105,31 @@ func ask(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &parsedBody)
 	if err != nil {
-		io.WriteString(w, "err c")
+		http.Error(w, "Request body is not valid JSON", http.StatusInternalServerError)
+		io.WriteString(w, "{}")
 		return
 	}
 
 	defer r.Body.Close()
 
+	for _, asked := range Games[parsedBody.Id].AskedQuestions {
+		if asked == m.Get("q") {
+			http.Error(w, "You cant ask the same question twice", http.StatusConflict)
+			io.WriteString(w, "{}")
+			return
+		}
+	}
+
 	shapes := askQuestion(Games[parsedBody.Id], m.Get("q"))
+
+	if shapes == nil {
+		http.Error(w, "Asked question doesnt exist", http.StatusTeapot)
+		return
+	}
 
 	game := Games[parsedBody.Id]
 	game.Shapes = append(game.Shapes, shapes...)
+	game.AskedQuestions = append(game.AskedQuestions, m.Get("q"))
 	Games[parsedBody.Id] = game
 
 	encoded, _ := json.Marshal(shapes)

@@ -12,9 +12,9 @@ func askQuestion(ctx lib.Game, id string) [][]lib.Vector2 {
 	case "tentacles-mcdonalds":
 		return tentacles(ctx, "mcdonalds")
 	default:
-		fmt.Printf("NOOOO")
+		fmt.Printf("Fake question, ignoring")
+		return nil
 	}
-	return nil
 }
 
 func tentacles(ctx lib.Game, location string) [][]lib.Vector2 {

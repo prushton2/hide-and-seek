@@ -4,7 +4,7 @@ import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, Rectangle} from
 import { Icon } from 'leaflet';
 import hidericon from "../assets/H.png"
 import seekericon from "../assets/S.png"
-import type { Shapes } from "../lib/interface";
+import type { Shapes, Circle as CircleType } from "../lib/interface";
 
 
 function Map({shapes, hider, seeker}: {shapes: Shapes | undefined, hider: number[], seeker: number[]}) {
@@ -34,6 +34,9 @@ function Map({shapes, hider, seeker}: {shapes: Shapes | undefined, hider: number
     popupAnchor: [0, -12.5]
   });
 
+  let shadedCircles: CircleType[] = [];
+  let unshadedCircles: CircleType[] = [];
+
   if(shapes == undefined) {
     return (
       <MapContainer center={[42.36041830331139, -71.0580009624248]} zoom={13} className='map'>
@@ -42,6 +45,16 @@ function Map({shapes, hider, seeker}: {shapes: Shapes | undefined, hider: number
         <Marker icon={seekerIcon} position={seeker as any} />
       </MapContainer>
     )
+  }
+
+  if(shapes.circles != null) {
+    shapes.circles.forEach((e) => {
+      if(e.shaded) {
+        shadedCircles.push(e)
+      } else {
+        unshadedCircles.push(e)
+      }
+    });
   }
 
   return (
@@ -54,15 +67,24 @@ function Map({shapes, hider, seeker}: {shapes: Shapes | undefined, hider: number
           <Rectangle key={"rect"} bounds={[[42.203745, -71.269668], [42.526848, -70.621710]]} pathOptions={shaded}/> : <></>
         }
 
-        {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
+        {unshadedCircles.map((e, i) => {
           return <Circle 
-            key={`circle ${i}`}
+            key={`circle unshaded ${i}`}
             radius={e.radius}
             center={[e.center.X, e.center.Y]}
             pathOptions={e.shaded ? shaded : unshaded}
           />
         })}
         
+        {shadedCircles.map((e, i) => {
+          return <Circle 
+            key={`circle shaded ${i}`}
+            radius={e.radius}
+            center={[e.center.X, e.center.Y]}
+            pathOptions={e.shaded ? shaded : unshaded}
+          />
+        })}
+
         {shapes.polygons == null ? <></> : shapes.polygons.map((e, i) => {
           return <Polygon
             key={`polygon ${i}`}

@@ -1,7 +1,44 @@
 package lib
 
+import (
+	"math"
+)
+
 func convertLatLongAndXY(p Vector2) Vector2 {
 	return Vector2{p.Y, p.X}
+}
+
+func MetersToFeet(m int) int {
+	return int(float64(m) * 3.28084)
+}
+
+func FeetToMeters(f int) int {
+	return int(float64(f) / 2.28084)
+}
+
+func GetDistanceBetweenLatLong(a, b Vector2) int {
+	const EarthRadius = 6371.0 // Radius of Earth in kilometers
+
+	lat1, lon1 := a.X, a.Y
+	lat2, lon2 := b.X, b.Y
+
+	// Convert degrees to radians
+	lat1Rad := lat1 * (math.Pi / 180)
+	lon1Rad := lon1 * (math.Pi / 180)
+	lat2Rad := lat2 * (math.Pi / 180)
+	lon2Rad := lon2 * (math.Pi / 180)
+
+	// Haversine formula
+	dLat := lat2Rad - lat1Rad
+	dLon := lon2Rad - lon1Rad
+
+	h := math.Sin(dLat/2)*math.Sin(dLat/2) +
+		math.Cos(lat1Rad)*math.Cos(lat2Rad)*
+			math.Sin(dLon/2)*math.Sin(dLon/2)
+
+	c := 2 * math.Atan2(math.Sqrt(h), math.Sqrt(1-h))
+
+	return int(EarthRadius * c * 1000)
 }
 
 func AverageNPoints(points []Vector2) Vector2 {

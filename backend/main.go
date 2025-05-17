@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"hideandseek/lib"
 	"io"
 	"net/http"
@@ -17,8 +16,7 @@ type UpdateInfo struct {
 }
 
 type Request struct {
-	Id  string      `json:"id"`
-	Pos lib.Vector2 `json:"pos"`
+	Id string `json:"id"`
 }
 
 var Games map[string]lib.Game = map[string]lib.Game{}
@@ -30,7 +28,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println(err)
+		// fmt.Println(err)
 		io.WriteString(w, "err a")
 		return
 	}
@@ -40,12 +38,14 @@ func update(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &parsedBody)
 
 	if err != nil {
-		fmt.Println(err)
+		// fmt.Println(err)
 		io.WriteString(w, "err b")
 		return
 	}
 
 	defer r.Body.Close()
+
+	// fmt.Printf("%v\n", parsedBody)
 
 	game, exists := Games[parsedBody.Id]
 
@@ -90,6 +90,7 @@ func ask(w http.ResponseWriter, r *http.Request) {
 	m, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
 		http.Error(w, "Error reading querystring", http.StatusInternalServerError)
+		// fmt.Println("Error reading querystring")
 		io.WriteString(w, "{}")
 		return
 	}
@@ -97,15 +98,19 @@ func ask(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Error reading body", http.StatusInternalServerError)
+		// fmt.Println("Error reading body")
 		io.WriteString(w, "{}")
 		return
 	}
+
+	// fmt.Printf("Body %s\n", string(body))
 
 	var parsedBody Request
 
 	err = json.Unmarshal(body, &parsedBody)
 	if err != nil {
 		http.Error(w, "Request body is not valid JSON", http.StatusInternalServerError)
+		// fmt.Println("Request body is not valid JSON")
 		io.WriteString(w, "{}")
 		return
 	}
@@ -115,6 +120,7 @@ func ask(w http.ResponseWriter, r *http.Request) {
 	for _, asked := range Games[parsedBody.Id].AskedQuestions {
 		if asked == m.Get("q") {
 			http.Error(w, "You cant ask the same question twice", http.StatusConflict)
+			// fmt.Println("You cant ask the same question twice")
 			io.WriteString(w, "{}")
 			return
 		}
@@ -122,7 +128,7 @@ func ask(w http.ResponseWriter, r *http.Request) {
 
 	game := askQuestion(Games[parsedBody.Id], m.Get("q"))
 
-	game.AskedQuestions = append(game.AskedQuestions, m.Get("q"))
+	// game.AskedQuestions = append(game.AskedQuestions, m.Get("q"))
 	Games[parsedBody.Id] = game
 
 	io.WriteString(w, "{}")

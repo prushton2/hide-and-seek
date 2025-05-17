@@ -12,11 +12,29 @@ func askQuestion(ctx lib.Game, id string) lib.Game {
 	case "tentacles-mcdonalds":
 		polygons := tentacles(ctx, "mcdonalds")
 		ctx.Shapes.Polygons = append(ctx.Shapes.Polygons, polygons...)
+		break
+
+	case "radar-1mi":
+		FullHighlight, circle := radar(ctx, lib.FeetToMeters(5280))
+		ctx.Shapes.FullHighlight = ctx.Shapes.FullHighlight || FullHighlight
+		ctx.Shapes.Circles = append(ctx.Shapes.Circles, circle)
+		break
 
 	default:
 		fmt.Printf("Fake question, ignoring")
+		break
 	}
 	return ctx
+}
+
+func radar(ctx lib.Game, radiusMeters int) (bool, lib.Circle) { //handles radar calculations in metric
+	distance := lib.GetDistanceBetweenLatLong(ctx.Hiderpos, ctx.Seekerpos)
+	var circle lib.Circle = lib.Circle{
+		Radius: radiusMeters,
+		Center: ctx.Seekerpos,
+		Shaded: distance > radiusMeters,
+	}
+	return distance < radiusMeters, circle
 }
 
 func tentacles(ctx lib.Game, location string) [][]lib.Vector2 {

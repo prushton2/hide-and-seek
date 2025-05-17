@@ -1,13 +1,13 @@
 import "./map.css";
 import 'leaflet/dist/leaflet.css';
-import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, Rectangle} from 'react-leaflet';
+import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, Rectangle, useMap, useMapEvent } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import hidericon from "../assets/H.png"
 import seekericon from "../assets/S.png"
-import type { Shapes, Circle as CircleType } from "../lib/interface";
+import type { Shapes } from "../lib/interface";
 
 
-function Map({shapes, hider, seeker}: {shapes: Shapes | undefined, hider: number[], seeker: number[]}) {
+function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], update: (center: number[], zoom: number) => void}) {
   const shaded = { 
     color: "blue",
     stroke: false,
@@ -34,32 +34,33 @@ function Map({shapes, hider, seeker}: {shapes: Shapes | undefined, hider: number
     popupAnchor: [0, -12.5]
   });
 
-  let shadedCircles: CircleType[] = [];
-  let unshadedCircles: CircleType[] = [];
+  function MyComponent() {
+    const map = useMap()
+    const zoomListener = useMapEvent('zoom', () => {
+      update(map.getCenter() as any, map.getZoom())
+    })
+    
+    const panListener = useMapEvent('move', () => {
+      update(map.getCenter() as any, map.getZoom())
+    })
+    return null
+  }
 
   if(shapes == undefined) {
     return (
-      <MapContainer center={[42.36041830331139, -71.0580009624248]} zoom={13} className='map'>
+      <MapContainer center={center as any} zoom={zoom} className='map'>
         <TileLayer url="https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"/>
+        <MyComponent />
         <Marker icon={hiderIcon} position={hider as any} />
         <Marker icon={seekerIcon} position={seeker as any} />
       </MapContainer>
     )
   }
 
-  if(shapes.circles != null) {
-    shapes.circles.forEach((e) => {
-      if(e.shaded) {
-        shadedCircles.push(e)
-      } else {
-        unshadedCircles.push(e)
-      }
-    });
-  }
-
   return (
-    <MapContainer center={[42.36041830331139, -71.0580009624248]} zoom={13} className='map'>
+    <MapContainer center={center as any} zoom={zoom} className='map'>
       <TileLayer url="https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"/>
+      <MyComponent />
       <Marker icon={hiderIcon} position={hider as any} />
       <Marker icon={seekerIcon} position={seeker as any} />
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
@@ -67,21 +68,21 @@ function Map({shapes, hider, seeker}: {shapes: Shapes | undefined, hider: number
           <Rectangle key={"rect"} bounds={[[42.203745, -71.269668], [42.526848, -70.621710]]} pathOptions={shaded}/> : <></>
         }
 
-        {unshadedCircles.map((e, i) => {
-          return <Circle 
+        {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
+          return e.shaded ? <></> : <Circle 
             key={`circle unshaded ${i}`}
             radius={e.radius}
             center={[e.center.X, e.center.Y]}
-            pathOptions={e.shaded ? shaded : unshaded}
+            pathOptions={unshaded}
           />
         })}
         
-        {shadedCircles.map((e, i) => {
-          return <Circle 
+        {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
+          return !e.shaded ? <></> : <Circle 
             key={`circle shaded ${i}`}
             radius={e.radius}
             center={[e.center.X, e.center.Y]}
-            pathOptions={e.shaded ? shaded : unshaded}
+            pathOptions={shaded}
           />
         })}
 

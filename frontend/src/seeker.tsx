@@ -76,6 +76,9 @@ function Questions({callback}: {callback: (question: string) => void}) {
 function Seeker() {
   const [shapes, setShapes] = useState<Shapes>();
   const [seeker, setSeeker] = useState<number[]>([0,0]);
+  const [rerenderKey, setRerenderKey] = useState(0);
+  const [center, setCenter] = useState([42.36041830331139, -71.0580009624248]);
+  const [zoom, setZoom] = useState(13);
 
   async function updateQuestions() {
     let response = await update()
@@ -87,6 +90,7 @@ function Seeker() {
     } catch {
       setSeeker([0,0])
     }
+    setRerenderKey(rerenderKey+1)
   }
 
   useEffect(() => {
@@ -96,8 +100,14 @@ function Seeker() {
 
   return (
     <div className="container">
-      <Map shapes={shapes} hider={[0,0]} seeker={seeker}/>
-      <Questions callback={(question) => {updateQuestions()}}/>
+      <Map
+        key={rerenderKey}
+        center={center} zoom={zoom}
+        shapes={shapes} hider={[0,0]} seeker={seeker}
+        update={(center, zoom) => {setCenter(center), setZoom(zoom)}}
+      />
+      
+      <Questions key={"q"} callback={(question) => {updateQuestions()}}/>
     </div>
   )
 }

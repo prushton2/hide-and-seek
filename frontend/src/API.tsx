@@ -1,17 +1,7 @@
 import axios from 'axios';
+import type { UpdateResponse } from './interface'; 
 
 let backend_url = "http://localhost:3333"
-
-interface updateResponse {
-    id: string,
-    askedQuestions: string[],
-    shapes: {X: number, Y: number}[][]
-    hiderspos: {X: number, Y: number}[]
-    hiderpos: {X: number, Y: number}
-    seekerspos: {X: number, Y: number}[]
-    seekerpos: {X: number, Y: number}
-}
-
 
 export function ask(question: string) {
     let res
@@ -28,7 +18,7 @@ export function ask(question: string) {
     }
 }
 
-export async function update(): Promise<updateResponse> {
+export async function update(): Promise<UpdateResponse> {
     let response = await axios.post(`${backend_url}/update`, JSON.stringify({
         "id": localStorage.getItem("code"),
         "team": localStorage.getItem("team"),
@@ -36,5 +26,5 @@ export async function update(): Promise<updateResponse> {
         "pos": {"X": 0, "Y": 0}
     }))
 
-    return (await response.data) as updateResponse;
+    return (await response.data) as UpdateResponse;
 }

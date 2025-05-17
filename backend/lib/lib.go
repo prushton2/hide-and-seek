@@ -1,24 +1,5 @@
 package lib
 
-type Game struct {
-	Id             string      `json:"id"`
-	AskedQuestions []string    `json:"askedQuestions"`
-	Hiderspos      []Vector2   `json:"hiderspos"`
-	Hiderpos       Vector2     `json:"hiderpos"`
-	Seekerspos     []Vector2   `json:"seekerspos"`
-	Seekerpos      Vector2     `json:"seekerpos"`
-	Shapes         [][]Vector2 `json:"shapes"`
-}
-
-type GameInfo struct {
-	Games map[string]Game `json:"games"`
-}
-
-type Vector2 struct {
-	X float64 `json:"X"`
-	Y float64 `json:"Y"`
-}
-
 func convertLatLongAndXY(p Vector2) Vector2 {
 	return Vector2{p.Y, p.X}
 }

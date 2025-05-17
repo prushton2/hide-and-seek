@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Map from './map.tsx'
 import { questions, type question } from './questions.tsx'
 import { update, ask } from "./API.tsx"
+import type { Shapes } from './interface.ts'
 
 
 function Questions({callback}: {callback: (question: string) => void}) {
@@ -73,24 +74,13 @@ function Questions({callback}: {callback: (question: string) => void}) {
 }
 
 function Seeker() {
-  const [shapes, setShapes] = useState<number[][][]>([[[]]]);
-  const [hider, setHider] = useState<number[]>([0,0]);
+  const [shapes, setShapes] = useState<Shapes>();
   const [seeker, setSeeker] = useState<number[]>([0,0]);
 
   async function updateQuestions() {
     let response = await update()
 
-    let newShapes: number[][][] = []
-    if(response.shapes == null) {
-      response.shapes = [[]]
-    }
-    for(let i = 0; i < response.shapes.length; i++) {
-      newShapes.push([])
-      for(let j = 0; j < response.shapes[i].length; j++) {
-        newShapes[i][j] = [response.shapes[i][j].X, response.shapes[i][j].Y]
-      }
-    }
-    setShapes(newShapes)
+    setShapes(response.shapes);
 
     try {
       setSeeker([response.seekerpos.X, response.seekerpos.Y])
@@ -106,7 +96,7 @@ function Seeker() {
 
   return (
     <div className="container">
-      <Map shapes={shapes} hider={hider} seeker={seeker}/>
+      <Map shapes={shapes} hider={[0,0]} seeker={seeker}/>
       <Questions callback={(question) => {updateQuestions()}}/>
     </div>
   )

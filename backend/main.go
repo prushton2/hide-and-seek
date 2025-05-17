@@ -57,7 +57,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 			Hiderpos:       lib.Vector2{},
 			Seekerspos:     []lib.Vector2{},
 			Seekerpos:      lib.Vector2{},
-			Shapes:         [][]lib.Vector2{},
+			Shapes:         lib.Shapes{},
 		}
 	}
 
@@ -120,21 +120,12 @@ func ask(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	shapes := askQuestion(Games[parsedBody.Id], m.Get("q"))
+	game := askQuestion(Games[parsedBody.Id], m.Get("q"))
 
-	if shapes == nil {
-		http.Error(w, "Asked question doesnt exist", http.StatusTeapot)
-		return
-	}
-
-	game := Games[parsedBody.Id]
-	game.Shapes = append(game.Shapes, shapes...)
 	game.AskedQuestions = append(game.AskedQuestions, m.Get("q"))
 	Games[parsedBody.Id] = game
 
-	encoded, _ := json.Marshal(shapes)
-
-	io.Writer.Write(w, encoded)
+	io.WriteString(w, "{}")
 }
 
 func main() {

@@ -70,27 +70,21 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
       <Marker icon={hiderIcon} position={hider as any} />
       <Marker icon={seekerIcon} position={seeker as any} />
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
-
-        {shapes.fullHighlight ? 
-          <Rectangle key={"rect"} bounds={[[42.203745, -71.269668], [42.526848, -70.621710]]} pathOptions={shaded}/> : <></>
-        }
-
         {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
-          return e.shaded ? <></> : <Circle 
-            key={`circle unshaded ${i}`}
-            radius={e.radius}
-            center={[e.center.X, e.center.Y]}
-            pathOptions={unshaded}
-          />
-        })}
-        
-        {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
-          return !e.shaded ? <></> : <Circle 
-            key={`circle shaded ${i}`}
+          return e.shaded ? <Circle 
+            key={`circle ${i}`}
             radius={e.radius}
             center={[e.center.X, e.center.Y]}
             pathOptions={shaded}
+          /> : 
+          <Donut
+            key={`donut ${i}`}
+            radius={1000000000} 
+            innerRadius={e.radius}
+            center={[e.center.X, e.center.Y] as any}
+            pathOptions={shaded}
           />
+
         })}
 
         {shapes.polygons == null ? <></> : shapes.polygons.map((e, i) => {

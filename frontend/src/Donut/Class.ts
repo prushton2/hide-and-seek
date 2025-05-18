@@ -1,154 +1,173 @@
-import {
-	PolyUtil,
-	LineUtil,
-	Polyline,
-	Bounds,
-	Point,
-	LatLng
-} from 'leaflet'
-/*
- * @class Donut
- * @inherits Polyline
- *
- * A class for drawing polygon overlays on a map. Extends `Polyline`.
- *
- * Note that points you pass when creating a polygon shouldn't have an additional last point equal to the first one \u2014 it's better to filter out such points.
- *
- *
- * @example
- *
- * ```js
- * // create a red polygon from an array of LatLng points
- * const latlngs = [[37, -109.05],[41, -109.03],[41, -102.05],[37, -102.04]];
- *
- * const polygon = new Polygon(latlngs, {color: 'red'}).addTo(map);
- *
- * // zoom the map to the polygon
- * map.fitBounds(polygon.getBounds());
- * ```
- *
- * You can also pass an array of arrays of latlngs, with the first array representing the outer shape and the other arrays representing holes in the outer shape:
- *
- * ```js
- * const latlngs = [
- *   [[37, -109.05],[41, -109.03],[41, -102.05],[37, -102.04]], // outer ring
- *   [[37.29, -108.58],[40.71, -108.58],[40.71, -102.50],[37.29, -102.50]] // hole
- * ];
- * ```
- *
- * Additionally, you can pass a multi-dimensional array to represent a MultiPolygon shape.
- *
- * ```js
- * const latlngs = [
- *   [ // first polygon
- *     [[37, -109.05],[41, -109.03],[41, -102.05],[37, -102.04]], // outer ring
- *     [[37.29, -108.58],[40.71, -108.58],[40.71, -102.50],[37.29, -102.50]] // hole
- *   ],
- *   [ // second polygon
- *     [[41, -111.03],[45, -111.04],[45, -104.05],[41, -104.05]]
- *   ]
- * ];
- * ```
- */
+import * as L from 'leaflet'
 
-// @constructor Donut(latlngs: LatLng[], options?: Polyline options)
-export const Donut = Polyline.extend({
+export let DonutClass = L.Circle.extend({
 
-	options: {
-		fill: true
+	constructor: function(latlng: any, options: any, legacyOptions: any) {
+		this.initialize(latlng, options, legacyOptions);
 	},
 
-	isEmpty() {
-		return !this._latlngs.length || !this._latlngs[0].length;
-	},
+    initialize: function (latlng: any, options: any, legacyOptions: any) {
+		// @ts-ignore
+        L.Circle.prototype.initialize.call(this, latlng, options, legacyOptions);
 
-	// @method getCenter(): LatLng
-	// Returns the center ([centroid](http://en.wikipedia.org/wiki/Centroid)) of the Polygon.
-	getCenter() {
-		// throws error when not yet added to map as this center calculation requires projected coordinates
-		if (!this._map) {
-			throw new Error('Must add layer to map before using getCenter()');
-		}
-		return PolyUtil.polygonCenter(this._defaultShape(), this._map.options.crs);
-	},
+        if (isNaN(this.options.innerRadius)) { throw new Error('Inner radius cannot be NaN'); }
+        if (this.options.innerRadius >= this.options.radius) { throw new Error('Outer radius must be greater then the inner radius'); }
 
-	_convertLatLngs(latlngs: any) {
-		const result = Polyline.prototype._convertLatLngs.call(this, latlngs),
-		len = result.length;
+        // @section
+        // @aka Donut options
+        // @option innerRadius: Number; Radius of the inner circle, in meters.
+        this._mInnerRadius = this.options.innerRadius;
 
-		// remove last point if it equals first one
-		if (len >= 2 && result[0] instanceof LatLng && result[0].equals(result[len - 1])) {
-			result.pop();
-		}
-		return result;
-	},
+    },
 
-	_setLatLngs(latlngs: any) {
-		Polyline.prototype._setLatLngs.call(this, latlngs);
-		if (LineUtil.isFlat(this._latlngs)) {
-			this._latlngs = [this._latlngs];
-		}
-	},
+    setRadius: function (radius: any) {
+        if (this._mInnerRadius >= radius) { throw new Error('Outer radius must be greater then the inner radius'); }
+        return L.Circle.prototype.setRadius.call(this, radius);
+    },
 
-	_defaultShape() {
-		return LineUtil.isFlat(this._latlngs[0]) ? this._latlngs[0] : this._latlngs[0][0];
-	},
+    // @method setInnerRadius(radius: Number): this
+    // Sets the inner radius of the donut. Units are in meters or percent.
+    setInnerRadius: function (radius: any) {
+        if (radius > this._mRadius) { throw new Error('Inner radius must be smaller then the outer radius'); }
+        this.options.innerRadius = this._mInnerRadius = radius;
+        return this.redraw();
+    },
 
-	_clipPoints() {
-		// polygons need a different clipping algorithm so we redefine that
+    // @method getInnerRadius(): Number
+    // Returns the current inner radius of the donut. Units are in meters or percent.
+    getInnerRadius: function () {
+        return this._mInnerRadius;
+    },
 
-		let bounds = this._renderer._bounds;
-		const w = this.options.weight,
-		p = new Point(w, w);
+    _updatePath: function () {
+        this._renderer._updateDonut(this);
+    },
 
-		// increase clip padding by stroke width to avoid stroke on clip edges
-		bounds = new Bounds(bounds.min.subtract(p), bounds.max.add(p));
+    _project: function () {
 
-		this._parts = [];
-		if (!this._pxBounds || !this._pxBounds.intersects(bounds)) {
-			return;
-		}
+        var map = this._map,
+            crs = map.options.crs;
 
-		if (this.options.noClip) {
-			this._parts = this._rings;
-			return;
-		}
+        if (crs.distance === L.CRS.Earth.distance) {
 
-		for (const ring of this._rings) {
-			const clipped = PolyUtil.clipPolygon(ring, bounds, true);
-			if (clipped.length) {
-				this._parts.push(clipped);
-			}
-		}
-	},
+            var outer = this._radiusCalculation(this._mRadius);
+            this._point = outer.point;
+            this._radius = outer.radius;
+            this._radiusY = outer.radiusY;
 
-	_updatePath() {
-		this._renderer._updatePoly(this, true);
-	},
+            var innerRadius = 0;
+            if (this.options.innerRadiusAsPercent) {
+                var factor = this._mInnerRadius > 1 ? 1 : this._mInnerRadius;
+                innerRadius = this._mRadius * factor;
+            } else {
+                innerRadius = this._mInnerRadius;
+            }
 
-	// Needed by the `Canvas` renderer for interactivity
-	_containsPoint(p: any) {
-		let inside = false,
-		part, p1, p2, i, j, k, len, len2;
+            var inner = this._radiusCalculation(innerRadius);
+            this._innerPoint = inner.point;
+            this._innerRadius = inner.radius;
+            this._innerRadiusY = inner.radiusY;
 
-		if (!this._pxBounds || !this._pxBounds.contains(p)) { return false; }
+        } else {
+            var latlng2 = crs.unproject(crs.project(this._latlng).subtract([this._mRadius, 0]));
 
-		// ray casting algorithm for detecting if point is in polygon
-		for (i = 0, len = this._parts.length; i < len; i++) {
-			part = this._parts[i];
+            this._point = map.latLngToLayerPoint(this._latlng);
+            this._radius = this._point.x - map.latLngToLayerPoint(latlng2).x;
 
-			for (j = 0, len2 = part.length, k = len2 - 1; j < len2; k = j++) {
-				p1 = part[j];
-				p2 = part[k];
+            var latlng3 = crs.unproject(crs.project(this._latlng).subtract([this._mInnerRadius, 0]));
+            this._innerRadius = this._point.x - map.latLngToLayerPoint(latlng3).x;
+        }
 
-				if (((p1.y > p.y) !== (p2.y > p.y)) && (p.x < (p2.x - p1.x) * (p.y - p1.y) / (p2.y - p1.y) + p1.x)) {
-					inside = !inside;
-				}
-			}
-		}
+        this._updateBounds();
+    },
 
-		// also check if it's on polygon stroke
-		return inside || Polyline.prototype._containsPoint.call(this, p, true);
-	}
+    _radiusCalculation: function (radius: any) {
+        var lng = this._latlng.lng,
+            lat = this._latlng.lat,
+            map = this._map;
 
+        var d = Math.PI / 180,
+			// @ts-ignore
+            latR = (radius / L.CRS.Earth.R) / d,
+            top = map.project([lat + latR, lng]),
+            bottom = map.project([lat - latR, lng]),
+            p = top.add(bottom).divideBy(2),
+            lat2 = map.unproject(p).lat,
+            lngR = Math.acos((Math.cos(latR * d) - Math.sin(lat * d) * Math.sin(lat2 * d)) /
+                (Math.cos(lat * d) * Math.cos(lat2 * d))) / d;
+
+        if (isNaN(lngR) || lngR === 0) {
+            lngR = latR / Math.cos(Math.PI / 180 * lat); // Fallback for edge case, #2425
+        }
+
+        return {
+            point: p.subtract(map.getPixelOrigin()),
+            radius: isNaN(lngR) ? 0 : p.x - map.project([lat2, lng - lngR]).x,
+            radiusY: p.y - top.y
+        };
+    }
+});
+
+let donut = function (latlng: any, options: any) {
+	// @ts-ignore
+    return new DonutClass(latlng, options);
+};
+
+L.SVG.include({
+    _updateDonut: function (layer: any) {
+        var p = layer._point,
+            r = Math.max(Math.round(layer._radius), 1),
+            r2 = Math.max(Math.round(layer._radiusY), 1) || r,
+            arc = 'a' + r + ',' + r2 + ' 0 1,0 ';
+
+        var innerP = layer._innerPoint || p,
+            innerR = Math.max(Math.round(layer._innerRadius), 1),
+            innerR2 = Math.max(Math.round(layer._innerRadiusY), 1) || innerR,
+            innerArc = 'a' + innerR + ',' + innerR2 + ' 0 1,0 ';
+
+        // drawing a circle with hole with two half-arcs
+        var d;
+        if (layer._empty()) {
+            d = 'M0 0';
+        } else {
+            d = 'M' + (p.x - r) + ',' + p.y +
+                arc + (r * 2) + ',0 ' +
+                arc + (-r * 2) + ',0 ';
+            d += 'M' + (innerP.x - innerR) + ',' + innerP.y +
+                innerArc + (innerR * 2) + ',0 ' +
+                innerArc + (-innerR * 2) + ',0 ';
+        }
+        this._setPath(layer, d);
+    },
+});
+
+L.Canvas.include({
+    _updateDonut: function (layer: any) {
+
+        if (!this._drawing || layer._empty()) { return; }
+
+        var p = layer._point,
+            ctx = this._ctx,
+            r = Math.max(Math.round(layer._radius), 1),
+            s = (Math.max(Math.round(layer._radiusY), 1) || r) / r,
+            innerP = layer._innerPoint || p,
+            innerR = Math.max(Math.round(layer._innerRadius), 1),
+            innerS = (Math.max(Math.round(layer._innerRadiusY), 1) || innerR) / innerR;
+
+        if (s !== 1) {
+            ctx.save();
+            ctx.scale(1, s);
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y / s, r, 0, Math.PI * 2, false);
+        ctx.moveTo(p.x + innerR, p.y);
+        ctx.arc(innerP.x, innerP.y / innerS, innerR, 0, Math.PI * 2, true);
+
+        if (s !== 1) {
+            ctx.restore();
+        }
+
+        this._fillStroke(ctx, layer);
+    },
 });

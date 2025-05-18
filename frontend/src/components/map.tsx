@@ -56,7 +56,7 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
         <Marker icon={hiderIcon} position={hider as any} />
         <Marker icon={seekerIcon} position={seeker as any} />
         <Pane name="excludedArea" style={{opacity: "0.25"}}>
-          <Donut bounds={[[42.203745, -71.269668], [42.526848, -70.621710]]} pathOptions={shaded} />        
+          <Donut radius={500} innerRadius={100} center={[42.352157, -71.045398] as any} pathOptions={shaded} />        
         </Pane>
         
       </MapContainer>

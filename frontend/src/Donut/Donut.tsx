@@ -5,31 +5,34 @@ import {
   extendContext,
 } from '@react-leaflet/core'
 import {
-  type LatLngBoundsExpression,
+  LatLng,
+  // type LatLngBoundsExpression,
   Rectangle as LeafletRectangle,
   type PathOptions,
-  Rectangle,
 } from 'leaflet'
 import type { ReactNode } from 'react'
-import { Donut } from "Class.ts"
+import { DonutClass } from "./Class.ts"
 
-export interface RectangleProps extends PathOptions, PathProps {
-  bounds: LatLngBoundsExpression
+export interface DonutProps extends PathOptions, PathProps {
+  center: LatLng
+  radius: number
+  innerRadius: number,
   children?: ReactNode
 }
 
 
-export const Donut = createPathComponent<LeafletRectangle, RectangleProps>(
-  function createRectangle({ bounds, ...options }, ctx) {
-    const donut = new Rectangle(bounds, options)
+export const Donut = createPathComponent<LeafletRectangle, DonutProps>(
+  function createDonut({ center, ...options }, ctx) {
+    // @ts-ignore
+    const donut = new DonutClass(center, options)
     return createElementObject(
       donut,
       extendContext(ctx, { overlayContainer: donut }),
     )
   },
-  function updateRectangle(layer, props, prevProps) {
-    if (props.bounds !== prevProps.bounds) {
-      layer.setBounds(props.bounds)
-    }
-  },
+  // function updateDonut(layer, props, prevProps) {
+  //   if (props.bounds !== prevProps.bounds) {
+  //     layer.setBounds(props.bounds)
+  //   }
+  // },
 )

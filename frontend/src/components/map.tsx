@@ -1,10 +1,12 @@
 import "./map.css";
 import 'leaflet/dist/leaflet.css';
-import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, Rectangle, useMap, useMapEvent } from 'react-leaflet';
+import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, Rectangle, useMap, useMapEvent, SVGOverlay } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import hidericon from "../assets/H.png"
 import seekericon from "../assets/S.png"
 import type { Shapes } from "../lib/interface";
+
+import { Donut } from '../Donut/Donut.tsx'
 
 
 function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], update: (center: number[], zoom: number) => void}) {
@@ -53,6 +55,10 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
         <MyComponent />
         <Marker icon={hiderIcon} position={hider as any} />
         <Marker icon={seekerIcon} position={seeker as any} />
+        <Pane name="excludedArea" style={{opacity: "0.25"}}>
+          <Donut bounds={[[42.203745, -71.269668], [42.526848, -70.621710]]} pathOptions={shaded} />        
+        </Pane>
+        
       </MapContainer>
     )
   }
@@ -64,6 +70,7 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
       <Marker icon={hiderIcon} position={hider as any} />
       <Marker icon={seekerIcon} position={seeker as any} />
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
+
         {shapes.fullHighlight ? 
           <Rectangle key={"rect"} bounds={[[42.203745, -71.269668], [42.526848, -70.621710]]} pathOptions={shaded}/> : <></>
         }

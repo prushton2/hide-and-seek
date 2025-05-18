@@ -5,7 +5,6 @@ import { questions, type question } from './lib/questions.tsx'
 import { update, ask } from "./lib/API.tsx"
 import type { Shapes } from './lib/interface.ts'
 
-
 function Questions({callback}: {callback: (question: string) => void}) {
   const [questionCategory, setQuestionCategory] = useState<string>("");
 

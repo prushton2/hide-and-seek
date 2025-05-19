@@ -1,0 +1,48 @@
+import xml.etree.ElementTree as ET
+import json
+header="""
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API 0.7.62.5 1bd436f1">
+<note>The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.</note>
+<meta osm_base="2025-05-19T01:32:42Z"/>
+"""
+footer="""
+</osm>
+"""
+def anyContentsMatch(arr1,arr2):
+    return True in[x in arr1 for x in arr2]
+def trimFatToFile():
+    # First step is to trim out nodes with no tags to help prevent python from crashing
+    out=""
+    with open("./map.xml","r")as xml:
+        for line in xml.readlines():
+            # print(f"|{line}| {line.startswith("  <node ")} {line.endswith("\"/>\n")}")
+            if(not(line.startswith("  <node ")and line.endswith("\"/>\n"))):
+                # print("appended")
+                out+=line
+    with open("./out.xml","w")as xml:
+        xml.write(out)
+def objectify():
+    tree=ET.parse("./out.xml")
+    root=tree.getroot()
+    cuisine=["burgers","pizza","coffee_shop","ice_cream","donut","tea"]
+    brands=["McDonald's","Wendy's"]
+    out={}
+    for i in brands:
+        out[i]=[]
+    for i in cuisine:
+        out[i]=[]
+    for item in root.findall('node'):
+        for child in item:
+            # print(child)
+            if(child.attrib["k"]=="brand"and child.attrib["v"]in brands):
+                out[child.attrib["v"]].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
+            if(child.attrib["k"]=="cuisine"and anyContentsMatch(child.attrib["v"].split(";"),cuisine)):
+                for i in child.attrib["v"].split(";"):
+                    try:
+                        out[i].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
+                    except:pass
+    print(json.dumps(out))
+if __name__=="__main__":
+    # trimFatToFile()
+    objectify()

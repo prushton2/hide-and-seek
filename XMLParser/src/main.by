@@ -40,7 +40,7 @@ def objectify() {
     tree = ET.parse("./out.xml")
     root = tree.getroot()
 
-    cuisine = ["burgers", "pizza", "coffee_shop", "ice_cream", "donut", "tea"]
+    cuisine = ["burger", "pizza", "coffee_shop", "ice_cream", "donut", "tea"]
     brands = ["McDonald's", "Wendy's"]
 
     out = {}

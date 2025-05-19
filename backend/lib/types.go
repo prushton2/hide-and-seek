@@ -11,9 +11,8 @@ type Game struct {
 }
 
 type Shapes struct {
-	FullHighlight bool        `json:"fullHighlight"`
-	Polygons      [][]Vector2 `json:"polygons"`
-	Circles       []Circle    `json:"circles"`
+	Polygons [][]Vector2 `json:"polygons"`
+	Circles  []Circle    `json:"circles"`
 }
 
 type Circle struct {

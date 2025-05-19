@@ -1,6 +1,6 @@
 import "./map.css";
 import 'leaflet/dist/leaflet.css';
-import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, Rectangle, useMap, useMapEvent, SVGOverlay } from 'react-leaflet';
+import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, useMap, useMapEvent } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import hidericon from "../assets/H.png"
 import seekericon from "../assets/S.png"
@@ -12,12 +12,6 @@ import { Donut } from '../Donut/Donut.tsx'
 function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], update: (center: number[], zoom: number) => void}) {
   const shaded = { 
     color: "blue",
-    stroke: false,
-    fillOpacity: 1,
-  };
-
-  const unshaded = { 
-    color: "black",
     stroke: false,
     fillOpacity: 1,
   };
@@ -55,10 +49,6 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
         <MyComponent />
         <Marker icon={hiderIcon} position={hider as any} />
         <Marker icon={seekerIcon} position={seeker as any} />
-        <Pane name="excludedArea" style={{opacity: "0.25"}}>
-          <Donut radius={500} innerRadius={100} center={[42.352157, -71.045398] as any} pathOptions={shaded} />        
-        </Pane>
-        
       </MapContainer>
     )
   }
@@ -70,6 +60,7 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
       <Marker icon={hiderIcon} position={hider as any} />
       <Marker icon={seekerIcon} position={seeker as any} />
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
+
         {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
           return e.shaded ? <Circle 
             key={`circle ${i}`}
@@ -84,7 +75,6 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
             center={[e.center.X, e.center.Y] as any}
             pathOptions={shaded}
           />
-
         })}
 
         {shapes.polygons == null ? <></> : shapes.polygons.map((e, i) => {
@@ -94,6 +84,7 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
             pathOptions={shaded}
           />
         })}
+        
       </Pane>
     </MapContainer>
   );

@@ -23,8 +23,7 @@ func askQuestion(ctx lib.Game, id string) lib.Game {
 		fallthrough
 	case "radar-3mi":
 		distance, _ := strconv.ParseFloat(strings.Split(strings.Split(id, "-")[1], "m")[0], 64)
-		FullHighlight, circle := radar(ctx, int(distance*float64(lib.FeetToMeters(5280))))
-		ctx.Shapes.FullHighlight = ctx.Shapes.FullHighlight || FullHighlight
+		circle := radar(ctx, int(distance*float64(lib.FeetToMeters(5280))))
 		ctx.Shapes.Circles = append(ctx.Shapes.Circles, circle)
 
 	default:
@@ -33,14 +32,14 @@ func askQuestion(ctx lib.Game, id string) lib.Game {
 	return ctx
 }
 
-func radar(ctx lib.Game, radiusMeters int) (bool, lib.Circle) { //handles radar calculations in metric
+func radar(ctx lib.Game, radiusMeters int) lib.Circle { //handles radar calculations in metric
 	distance := lib.GetDistanceBetweenLatLong(ctx.Hiderpos, ctx.Seekerpos)
 	var circle lib.Circle = lib.Circle{
 		Radius: radiusMeters,
 		Center: ctx.Seekerpos,
 		Shaded: distance > radiusMeters,
 	}
-	return distance < radiusMeters, circle
+	return circle
 }
 
 func tentacles(ctx lib.Game, location string) [][]lib.Vector2 {

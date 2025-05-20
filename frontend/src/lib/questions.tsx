@@ -30,9 +30,19 @@ export const questions: { [key: string]: question } = {
         id: "thermometer-4min",
         icon: ""
     },
-    "tentacles-mcdonalds": {
-        name: "McDonalds",
-        id: "tentacles-mcdonalds",
+    "tentacles-McDonald's": {
+        name: "McDonald's",
+        id: "tentacles-McDonald's",
+        icon: ""
+    },
+    "tentacles-Wendy's": {
+        name: "Wendy's",
+        id: "tentacles-Wendy's",
+        icon: ""
+    },
+    "tentacles-burger": {
+        name: "Burger Restaurant",
+        id: "tentacles-burger",
         icon: ""
     },
     "radar-0.5mi": {

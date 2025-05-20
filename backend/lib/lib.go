@@ -1,11 +1,12 @@
 package lib
 
 import (
+	"hideandseek/types"
 	"math"
 )
 
-func convertLatLongAndXY(p Vector2) Vector2 {
-	return Vector2{p.Y, p.X}
+func convertLatLongAndXY(p types.Vector2) types.Vector2 {
+	return types.Vector2{X: p.Y, Y: p.X}
 }
 
 func MetersToFeet(m int) int {
@@ -16,7 +17,7 @@ func FeetToMeters(f int) int {
 	return int(float64(f) / 2.28084)
 }
 
-func GetDistanceBetweenLatLong(a, b Vector2) int {
+func GetDistanceBetweenLatLong(a, b types.Vector2) int {
 	const EarthRadius = 6371.0 // Radius of Earth in kilometers
 
 	lat1, lon1 := a.X, a.Y
@@ -41,151 +42,12 @@ func GetDistanceBetweenLatLong(a, b Vector2) int {
 	return int(EarthRadius * c * 1000)
 }
 
-func AverageNPoints(points []Vector2) Vector2 {
+func AverageNPoints(points []types.Vector2) types.Vector2 {
 	var sumX, sumY float64
 	for _, point := range points {
 		sumX += point.X
 		sumY += point.Y
 	}
 	count := float64(len(points))
-	return Vector2{X: sumX / count, Y: sumY / count}
-}
-
-// -71.269668 < long < -70.621710
-// 42.203745 < lat < 42.526848
-func sortPointIntoArray(point Vector2, arr []Vector2) []Vector2 {
-	var output []Vector2 = make([]Vector2, len(arr)+1)
-	var outputSize int = 0
-	var sorted bool = false
-
-	// the item is sorted if it follows a clockwise pattern.
-	// This is defined as the following: The point must follow the first point that matches one coordinate of the pair.
-
-	output[0] = arr[0]
-	outputSize++
-
-	// The exception is the first point, where only the x needs to match. If a point sorts into the end of the array, this prevents it from being added to the start of the array.	if(point.X == arr[0].X) {
-	if point.X == arr[0].X {
-		output[outputSize] = point
-		outputSize++
-		sorted = true
-	}
-
-	for i := 1; i < len(arr); i++ {
-		// if either the x or y coordinate matches, the point is sorted into the array at the succeeding index
-		output[outputSize] = arr[i]
-		outputSize++
-
-		if (point.X == arr[i].X || point.Y == arr[i].Y) && !sorted {
-			output[outputSize] = point
-			outputSize++
-			sorted = true
-		}
-	}
-	return output
-}
-
-func orientation(p, q, r Vector2) int {
-	// Returns the orientation of the triplet (p, q, r).
-	// 0 -> p, q and r are collinear
-	// 1 -> Clockwise
-	// 2 -> Counterclockwise
-	val := (q.Y-p.Y)*(r.X-q.X) - (q.X-p.X)*(r.Y-q.Y)
-	if val == 0 {
-		return 0
-	} else if val > 0 {
-		return 1
-	} else {
-		return 2
-	}
-}
-
-func doIntersect(p1, q1, p2, q2 Vector2) bool {
-	// Find the four orientations needed for general and
-	// special cases
-	o1 := orientation(p1, q1, p2)
-	o2 := orientation(p1, q1, q2)
-	o3 := orientation(p2, q2, p1)
-	o4 := orientation(p2, q2, q1)
-
-	// General case
-	if o1 != o2 && o3 != o4 {
-		return true
-	}
-
-	return false
-}
-
-func BoxFarPoint(close, far Vector2) []Vector2 {
-	close = convertLatLongAndXY(close)
-	far = convertLatLongAndXY(far)
-
-	bounds := []Vector2{
-		{X: -71.269668, Y: -70.621710}, // left to right
-		{X: 42.203745, Y: 42.526848},   // bottom to top
-	}
-
-	corners := []Vector2{
-		{X: bounds[0].Y, Y: bounds[1].Y}, // top right
-		{X: bounds[0].Y, Y: bounds[1].X}, // bottom right
-		{X: bounds[0].X, Y: bounds[1].X}, // bottom left
-		{X: bounds[0].X, Y: bounds[1].Y}, // top left
-	}
-
-	midpoint := Vector2{
-		X: (close.X + far.X) / 2,
-		Y: (close.Y + far.Y) / 2,
-	}
-
-	left := Vector2{
-		X: bounds[0].X,
-		Y: midpoint.Y - ((close.X-far.X)/(close.Y-far.Y))*(bounds[0].X-midpoint.X),
-	}
-	right := Vector2{
-		X: bounds[0].Y,
-		Y: midpoint.Y - ((close.X-far.X)/(close.Y-far.Y))*(bounds[0].Y-midpoint.X),
-	}
-	top := Vector2{
-		X: -((close.Y-far.Y)/(close.X-far.X))*(bounds[1].X-midpoint.Y) + midpoint.X,
-		Y: bounds[1].X,
-	}
-	bottom := Vector2{
-		X: -((close.Y-far.Y)/(close.X-far.X))*(bounds[1].Y-midpoint.Y) + midpoint.X,
-		Y: bounds[1].Y,
-	}
-
-	var tanSegment []Vector2
-
-	if left.Y < bounds[1].Y && left.Y > bounds[1].X {
-		tanSegment = append(tanSegment, left)
-		corners = sortPointIntoArray(left, corners)
-	}
-
-	if right.Y < bounds[1].Y && right.Y > bounds[1].X {
-		tanSegment = append(tanSegment, right)
-		corners = sortPointIntoArray(right, corners)
-	}
-
-	if top.X < bounds[0].Y && top.X > bounds[0].X {
-		tanSegment = append(tanSegment, top)
-		corners = sortPointIntoArray(top, corners)
-	}
-
-	if bottom.X < bounds[0].Y && bottom.X > bounds[0].X {
-		tanSegment = append(tanSegment, bottom)
-		corners = sortPointIntoArray(bottom, corners)
-	}
-	var shape []Vector2
-
-	for i := 0; i < len(corners); i++ {
-		if corners[i] == tanSegment[0] || corners[i] == tanSegment[1] {
-			shape = append(shape, convertLatLongAndXY(corners[i]))
-			continue
-		}
-		if !doIntersect(far, corners[i], tanSegment[0], tanSegment[1]) {
-			shape = append(shape, convertLatLongAndXY(corners[i]))
-		}
-	}
-
-	return shape
+	return types.Vector2{X: sumX / count, Y: sumY / count}
 }

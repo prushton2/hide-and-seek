@@ -4,15 +4,20 @@ import (
 	"fmt"
 	"hideandseek/globals"
 	"hideandseek/lib"
+	"hideandseek/types"
 	"math"
 	"strconv"
 	"strings"
 )
 
-func askQuestion(ctx lib.Game, id string) lib.Game {
+func askQuestion(ctx types.Game, id string) types.Game {
 	switch id {
-	case "tentacles-mcdonalds":
-		polygons := tentacles(ctx, "mcdonalds")
+	case "tentacles-Wendy's":
+		fallthrough
+	case "tentacles-burger":
+		fallthrough
+	case "tentacles-McDonald's":
+		polygons := tentacles(ctx, strings.Split(id, "-")[1])
 		ctx.Shapes.Polygons = append(ctx.Shapes.Polygons, polygons...)
 
 	case "radar-0.5mi":
@@ -32,9 +37,9 @@ func askQuestion(ctx lib.Game, id string) lib.Game {
 	return ctx
 }
 
-func radar(ctx lib.Game, radiusMeters int) lib.Circle { //handles radar calculations in metric
+func radar(ctx types.Game, radiusMeters int) types.Circle { //handles radar calculations in metric
 	distance := lib.GetDistanceBetweenLatLong(ctx.Hiderpos, ctx.Seekerpos)
-	var circle lib.Circle = lib.Circle{
+	var circle types.Circle = types.Circle{
 		Radius: radiusMeters,
 		Center: ctx.Seekerpos,
 		Shaded: distance > radiusMeters,
@@ -42,8 +47,13 @@ func radar(ctx lib.Game, radiusMeters int) lib.Circle { //handles radar calculat
 	return circle
 }
 
-func tentacles(ctx lib.Game, location string) [][]lib.Vector2 {
-	allLocations := globals.Locations[location]
+func tentacles(ctx types.Game, location string) [][]types.Vector2 {
+	allLocations, err := globals.GetLocation(location)
+
+	if err != nil {
+		fmt.Println(err)
+		return [][]types.Vector2{}
+	}
 
 	// get hiders closest location
 	var closest int = 0
@@ -56,7 +66,7 @@ func tentacles(ctx lib.Game, location string) [][]lib.Vector2 {
 		}
 	}
 
-	var Shapes [][]lib.Vector2 = make([][]lib.Vector2, 0)
+	var Shapes [][]types.Vector2 = make([][]types.Vector2, 0)
 
 	for i := 0; i < len(allLocations); i++ {
 		if i == closest {

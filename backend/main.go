@@ -3,23 +3,24 @@ package main
 import (
 	"encoding/json"
 	"hideandseek/lib"
+	"hideandseek/types"
 	"io"
 	"net/http"
 	"net/url"
 )
 
 type UpdateInfo struct {
-	Id   string      `json:"id"`
-	Team string      `json:"team"`
-	No   int         `json:"no"`
-	Pos  lib.Vector2 `json:"pos"`
+	Id   string        `json:"id"`
+	Team string        `json:"team"`
+	No   int           `json:"no"`
+	Pos  types.Vector2 `json:"pos"`
 }
 
 type Request struct {
 	Id string `json:"id"`
 }
 
-var Games map[string]lib.Game = map[string]lib.Game{}
+var Games map[string]types.Game = map[string]types.Game{}
 
 func update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -48,14 +49,14 @@ func update(w http.ResponseWriter, r *http.Request) {
 	game, exists := Games[parsedBody.Id]
 
 	if !exists {
-		game = lib.Game{
+		game = types.Game{
 			Id:             parsedBody.Id,
 			AskedQuestions: []string{},
-			Hiderspos:      []lib.Vector2{},
-			Hiderpos:       lib.Vector2{},
-			Seekerspos:     []lib.Vector2{},
-			Seekerpos:      lib.Vector2{},
-			Shapes:         lib.Shapes{},
+			Hiderspos:      []types.Vector2{},
+			Hiderpos:       types.Vector2{},
+			Seekerspos:     []types.Vector2{},
+			Seekerpos:      types.Vector2{},
+			Shapes:         types.Shapes{},
 		}
 	}
 
@@ -63,14 +64,14 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	if parsedBody.Team == "hiders" && parsedBody.No != -1 {
 		if parsedBody.No >= len(game.Hiderspos) {
-			game.Hiderspos = append(game.Hiderspos, make([]lib.Vector2, parsedBody.No-len(game.Hiderspos)+1)...)
+			game.Hiderspos = append(game.Hiderspos, make([]types.Vector2, parsedBody.No-len(game.Hiderspos)+1)...)
 		}
 		game.Hiderspos[parsedBody.No] = parsedBody.Pos
 		game.Hiderpos = lib.AverageNPoints(game.Hiderspos)
 		Games[parsedBody.Id] = game
 	} else if parsedBody.Team == "seekers" && parsedBody.No != -1 {
 		if parsedBody.No >= len(game.Seekerspos) {
-			game.Seekerspos = append(game.Seekerspos, make([]lib.Vector2, parsedBody.No-len(game.Seekerspos)+1)...)
+			game.Seekerspos = append(game.Seekerspos, make([]types.Vector2, parsedBody.No-len(game.Seekerspos)+1)...)
 		}
 		game.Seekerspos[parsedBody.No] = parsedBody.Pos
 		game.Seekerpos = lib.AverageNPoints(game.Seekerspos)

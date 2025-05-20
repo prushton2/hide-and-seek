@@ -25,8 +25,9 @@ def trimFatToFile():
 def objectify():
     tree=ET.parse("./out.xml")
     root=tree.getroot()
-    cuisine=["burgers","pizza","coffee_shop","ice_cream","donut","tea"]
+    cuisine=["burger","pizza","coffee_shop","ice_cream","donut","tea","bubble tea","pasta"]
     brands=["McDonald's","Wendy's"]
+    transit=["subway","Wendy's"]
     out={}
     for i in brands:
         out[i]=[]
@@ -42,7 +43,11 @@ def objectify():
                     try:
                         out[i].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
                     except:pass
-    print(json.dumps(out))
+            # if(child.attrib["k"] == "subway" and child.attrib["v"] == "yes") {
+            #     out[child.attrib["v"]].append([float(item.attrib["lat"]), float(item.attrib["lon"])])
+            # }
+    with open("locations.json","w")as file:
+        file.write(json.dumps(out))
 if __name__=="__main__":
     # trimFatToFile()
     objectify()

@@ -40,8 +40,9 @@ def objectify() {
     tree = ET.parse("./out.xml")
     root = tree.getroot()
 
-    cuisine = ["burger", "pizza", "coffee_shop", "ice_cream", "donut", "tea"]
+    cuisine = ["burger", "pizza", "coffee_shop", "ice_cream", "donut", "tea", "bubble tea", "pasta"]
     brands = ["McDonald's", "Wendy's"]
+    transit = ["subway", "Wendy's"]
 
     out = {}
 
@@ -67,10 +68,16 @@ def objectify() {
                     } except {}
                 }
             }
+
+            # if(child.attrib["k"] == "subway" and child.attrib["v"] == "yes") {
+            #     out[child.attrib["v"]].append([float(item.attrib["lat"]), float(item.attrib["lon"])])
+            # }
         }
     }
 
-    print(json.dumps(out))
+    with open("locations.json", "w") as file {
+        file.write(json.dumps(out))
+    }
 }
 
 

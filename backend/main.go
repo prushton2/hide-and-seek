@@ -29,7 +29,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		// fmt.Println(err)
+		http.Error(w, "Error reading request body (is this a post request?)", http.StatusBadRequest)
 		io.WriteString(w, "err a")
 		return
 	}
@@ -39,7 +39,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &parsedBody)
 
 	if err != nil {
-		// fmt.Println(err)
+		http.Error(w, "Body is not valid JSON", http.StatusBadRequest)
 		io.WriteString(w, "err b")
 		return
 	}
@@ -90,16 +90,14 @@ func ask(w http.ResponseWriter, r *http.Request) {
 
 	m, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil {
-		http.Error(w, "Error reading querystring", http.StatusInternalServerError)
-		// fmt.Println("Error reading querystring")
+		http.Error(w, "Error reading querystring (is there a querystring?)", http.StatusBadRequest)
 		io.WriteString(w, "{}")
 		return
 	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Error reading body", http.StatusInternalServerError)
-		// fmt.Println("Error reading body")
+		http.Error(w, "Error reading body (is this a post request?)", http.StatusBadRequest)
 		io.WriteString(w, "{}")
 		return
 	}
@@ -108,8 +106,7 @@ func ask(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &parsedBody)
 	if err != nil {
-		http.Error(w, "Request body is not valid JSON", http.StatusInternalServerError)
-		// fmt.Println("Request body is not valid JSON")
+		http.Error(w, "Request body is not valid JSON", http.StatusBadRequest)
 		io.WriteString(w, "{}")
 		return
 	}
@@ -119,7 +116,6 @@ func ask(w http.ResponseWriter, r *http.Request) {
 	for _, asked := range Games[parsedBody.Id].AskedQuestions {
 		if asked == m.Get("q") {
 			http.Error(w, "You cant ask the same question twice", http.StatusConflict)
-			// fmt.Println("You cant ask the same question twice")
 			io.WriteString(w, "{}")
 			return
 		}

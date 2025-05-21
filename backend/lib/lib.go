@@ -51,3 +51,16 @@ func AverageNPoints(points []types.Vector2) types.Vector2 {
 	count := float64(len(points))
 	return types.Vector2{X: sumX / count, Y: sumY / count}
 }
+
+func GetClosestPoint(locations []types.Vector2, position types.Vector2) (types.Vector2, int) {
+	var closest int = 0
+	var closestDist float64 = -1.0
+	for i := range locations {
+		var relDist float64 = math.Pow(position.X-locations[i].X, 2) + math.Pow(position.Y-locations[i].Y, 2)
+		if relDist < closestDist || i == 0 {
+			closest = i
+			closestDist = relDist
+		}
+	}
+	return locations[closest], closest
+}

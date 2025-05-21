@@ -5,7 +5,6 @@ import (
 	"hideandseek/globals"
 	"hideandseek/lib"
 	"hideandseek/types"
-	"math"
 	"strconv"
 	"strings"
 )
@@ -55,25 +54,16 @@ func tentacles(ctx types.Game, location string) [][]types.Vector2 {
 		return [][]types.Vector2{}
 	}
 
-	// get hiders closest location
-	var closest int = 0
-	var closestDist float64 = -1.0
-	for i := 0; i < len(allLocations); i++ {
-		var relDist float64 = math.Pow(ctx.Hiderpos.X-allLocations[i].X, 2) + math.Pow(ctx.Hiderpos.Y-allLocations[i].Y, 2)
-		if relDist < closestDist || i == 0 {
-			closest = i
-			closestDist = relDist
-		}
-	}
+	closestPoint, closestIndex := lib.GetClosestPoint(allLocations, ctx.Hiderpos)
 
 	var Shapes [][]types.Vector2 = make([][]types.Vector2, 0)
 
-	for i := 0; i < len(allLocations); i++ {
-		if i == closest {
+	for i := range allLocations {
+		if i == closestIndex {
 			continue
 		}
 
-		Shapes = append(Shapes, lib.BoxFarPoint(allLocations[closest], allLocations[i]))
+		Shapes = append(Shapes, lib.BoxFarPoint(closestPoint, allLocations[i]))
 	}
 
 	return Shapes

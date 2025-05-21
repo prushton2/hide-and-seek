@@ -5,7 +5,6 @@ import { Icon } from 'leaflet';
 import hidericon from "../assets/H.png"
 import seekericon from "../assets/S.png"
 import type { Shapes } from "../lib/interface";
-
 import { Donut } from '../Donut/Donut.tsx'
 
 

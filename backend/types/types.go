@@ -1,13 +1,13 @@
 package types
 
 type Game struct {
-	Id             string    `json:"id"`
-	AskedQuestions []string  `json:"askedQuestions"`
-	Hiderspos      []Vector2 `json:"hiderspos"`
-	Hiderpos       Vector2   `json:"hiderpos"`
-	Seekerspos     []Vector2 `json:"seekerspos"`
-	Seekerpos      Vector2   `json:"seekerpos"`
-	Shapes         Shapes    `json:"shapes"`
+	Id             string   `json:"id"`
+	AskedQuestions []string `json:"askedQuestions"`
+	Hiders         []string `json:"hiders"`
+	Hiderpos       Vector2  `json:"hiderpos"`
+	Seekers        []string `json:"seekers"`
+	Seekerpos      Vector2  `json:"seekerpos"`
+	Shapes         Shapes   `json:"shapes"`
 }
 
 type Shapes struct {
@@ -28,4 +28,18 @@ type GameInfo struct {
 type Vector2 struct {
 	X float64 `json:"X"`
 	Y float64 `json:"Y"`
+}
+
+type Player struct {
+	Team string  `json:"team"`
+	No   int     `json:"no"`
+	Code string  `json:"code"`
+	Pos  Vector2 `json:"pos"`
+}
+
+type UpdateResponse struct {
+	AskedQuestions []string `json:"askedQuestions"`
+	Hiderpos       Vector2  `json:"hiderpos"`
+	Seekerpos      Vector2  `json:"seekerpos"`
+	Shapes         Shapes   `json:"shapes"`
 }

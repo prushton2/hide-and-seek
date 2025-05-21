@@ -2,25 +2,32 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"hideandseek/lib"
 	"hideandseek/types"
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/google/uuid"
 )
 
 type UpdateInfo struct {
-	Id   string        `json:"id"`
-	Team string        `json:"team"`
-	No   int           `json:"no"`
-	Pos  types.Vector2 `json:"pos"`
+	Key string        `json:"key"`
+	Pos types.Vector2 `json:"pos"`
 }
 
 type Request struct {
-	Id string `json:"id"`
+	Key string `json:"key"`
+}
+
+type JoinRequest struct {
+	Team string `json:"team"`
+	Code string `json:"code"`
 }
 
 var Games map[string]types.Game = map[string]types.Game{}
+var Players map[string]types.Player = map[string]types.Player{}
 
 func update(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -30,57 +37,78 @@ func update(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Error reading request body (is this a post request?)", http.StatusBadRequest)
-		io.WriteString(w, "err a")
+		io.WriteString(w, "{}")
 		return
 	}
 
+	// parse the body
 	var parsedBody UpdateInfo
-
 	err = json.Unmarshal(body, &parsedBody)
-
 	if err != nil {
 		http.Error(w, "Body is not valid JSON", http.StatusBadRequest)
-		io.WriteString(w, "err b")
+		io.WriteString(w, "{}")
 		return
 	}
 
 	defer r.Body.Close()
 
-	game, exists := Games[parsedBody.Id]
-
+	// check if player exists
+	player, exists := Players[parsedBody.Key]
 	if !exists {
-		game = types.Game{
-			Id:             parsedBody.Id,
-			AskedQuestions: []string{},
-			Hiderspos:      []types.Vector2{},
-			Hiderpos:       types.Vector2{},
-			Seekerspos:     []types.Vector2{},
-			Seekerpos:      types.Vector2{},
-			Shapes:         types.Shapes{},
-		}
+		http.Error(w, "Invalid Key", http.StatusForbidden)
+		io.WriteString(w, "{}")
+		return
 	}
 
-	Games[parsedBody.Id] = game
+	// update the players position
+	player.Pos = parsedBody.Pos
+	Players[parsedBody.Key] = player
 
-	if parsedBody.Team == "hiders" && parsedBody.No != -1 {
-		if parsedBody.No >= len(game.Hiderspos) {
-			game.Hiderspos = append(game.Hiderspos, make([]types.Vector2, parsedBody.No-len(game.Hiderspos)+1)...)
-		}
-		game.Hiderspos[parsedBody.No] = parsedBody.Pos
-		game.Hiderpos = lib.AverageNPoints(game.Hiderspos)
-		Games[parsedBody.Id] = game
-	} else if parsedBody.Team == "seekers" && parsedBody.No != -1 {
-		if parsedBody.No >= len(game.Seekerspos) {
-			game.Seekerspos = append(game.Seekerspos, make([]types.Vector2, parsedBody.No-len(game.Seekerspos)+1)...)
-		}
-		game.Seekerspos[parsedBody.No] = parsedBody.Pos
-		game.Seekerpos = lib.AverageNPoints(game.Seekerspos)
-		Games[parsedBody.Id] = game
+	// check if game exists
+	game, exists := Games[player.Code]
+	if !exists {
+		http.Error(w, "Game doesnt exist", http.StatusTeapot)
+		io.WriteString(w, "{}")
+		return
 	}
 
-	encoded, _ := json.Marshal(Games[parsedBody.Id])
+	// average the positions of the hiders
+	var hiderspos []types.Vector2 = []types.Vector2{}
+	for i := range game.Hiders {
+		hiderspos = append(hiderspos, Players[game.Hiders[i]].Pos)
+	}
+	fmt.Printf("%v\n", hiderspos)
+	game.Hiderpos = lib.AverageNPoints(hiderspos)
+
+	// average the positions of the seekers
+	var seekerspos []types.Vector2 = []types.Vector2{}
+	for i := range game.Seekers {
+		seekerspos = append(seekerspos, Players[game.Seekers[i]].Pos)
+	}
+	game.Seekerpos = lib.AverageNPoints(seekerspos)
+
+	// write to game
+	Games[player.Code] = game
+
+	response := types.UpdateResponse{
+		AskedQuestions: game.AskedQuestions,
+		Hiderpos:       game.Hiderpos,
+		Seekerpos:      game.Seekerpos,
+		Shapes:         game.Shapes,
+	}
+
+	encoded, err := json.Marshal(response)
+
+	fmt.Printf("%v", response)
+	if err != nil {
+		fmt.Printf("%v", err)
+		http.Error(w, "Error encoding game", http.StatusInternalServerError)
+		io.WriteString(w, "{}")
+		return
+	}
 
 	io.Writer.Write(w, encoded)
+	fmt.Printf("%v", response)
 }
 
 func ask(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +141,15 @@ func ask(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	for _, asked := range Games[parsedBody.Id].AskedQuestions {
+	_, exists := Players[parsedBody.Key]
+
+	if !exists {
+		http.Error(w, "Invalid Key", http.StatusForbidden)
+		io.WriteString(w, "{}")
+		return
+	}
+
+	for _, asked := range Games[parsedBody.Key].AskedQuestions {
 		if asked == m.Get("q") {
 			http.Error(w, "You cant ask the same question twice", http.StatusConflict)
 			io.WriteString(w, "{}")
@@ -121,17 +157,92 @@ func ask(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	game := askQuestion(Games[parsedBody.Id], m.Get("q"))
+	game := askQuestion(Games[parsedBody.Key], m.Get("q"))
 
 	game.AskedQuestions = append(game.AskedQuestions, m.Get("q"))
-	Games[parsedBody.Id] = game
+	Games[parsedBody.Key] = game
 
 	io.WriteString(w, "{}")
+}
+
+func join(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Request-Method", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+
+	// read the body
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body (is this a post request?)", http.StatusBadRequest)
+		io.WriteString(w, "{}")
+		return
+	}
+
+	// parse the body
+	var parsedBody JoinRequest
+	err = json.Unmarshal(body, &parsedBody)
+	if err != nil {
+		http.Error(w, "Body is not valid JSON", http.StatusBadRequest)
+		io.WriteString(w, "{}")
+		return
+	}
+	defer r.Body.Close()
+
+	// create a uuid that doesnt exist yet
+	id := uuid.New().String()
+	_, exists := Players[id]
+	for exists {
+		id = uuid.New().String()
+		_, exists = Players[id]
+	}
+
+	// get game to get the player number
+	game, exists := Games[parsedBody.Code]
+	No := 0
+
+	// create game if not exists
+	if !exists {
+		game = types.Game{
+			Id:             parsedBody.Code,
+			AskedQuestions: []string{},
+			Hiders:         []string{},
+			Hiderpos:       types.Vector2{X: 0, Y: 0},
+			Seekers:        []string{},
+			Seekerpos:      types.Vector2{X: 0, Y: 0},
+			Shapes:         types.Shapes{},
+		}
+	}
+
+	// add to team
+	if parsedBody.Team == "hiders" {
+		No = len(game.Hiders)
+		game.Hiders = append(game.Hiders, id)
+	} else if parsedBody.Team == "seekers" {
+		No = len(game.Seekers)
+		game.Seekers = append(game.Seekers, id)
+	}
+
+	// create player
+	player := types.Player{
+		Team: parsedBody.Team,
+		No:   No,
+		Code: parsedBody.Code,
+		Pos:  types.Vector2{X: 0, Y: 0},
+	}
+
+	Players[id] = player
+	Games[parsedBody.Code] = game
+
+	fmt.Printf("%v\n", game)
+
+	io.WriteString(w, fmt.Sprintf("{\"key\": \"%s\"}", id))
 }
 
 func main() {
 	http.HandleFunc("/ask", ask)
 	http.HandleFunc("/update", update)
+	http.HandleFunc("/join", join)
 
+	fmt.Println("Running Server")
 	http.ListenAndServe(":3333", nil)
 }

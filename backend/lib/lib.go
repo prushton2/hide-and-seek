@@ -44,11 +44,16 @@ func GetDistanceBetweenLatLong(a, b types.Vector2) int {
 
 func AverageNPoints(points []types.Vector2) types.Vector2 {
 	var sumX, sumY float64
+	count := float64(len(points))
+
+	if count == 0 {
+		return types.Vector2{X: 0, Y: 0}
+	}
+
 	for _, point := range points {
 		sumX += point.X
 		sumY += point.Y
 	}
-	count := float64(len(points))
 	return types.Vector2{X: sumX / count, Y: sumY / count}
 }
 

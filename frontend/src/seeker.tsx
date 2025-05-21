@@ -10,16 +10,15 @@ function Questions({callback}: {callback: (question: string) => void}) {
 
   function renderQuestion(question: question) {
     return <button className="question" key={question.id} onClick={async(e) => {
-          if(question.id == "back") {
-            setQuestionCategory("")
-          } else {
-            console.log(question.id)
-            await ask(question.id)
-            callback(question.id)
-          }
-        }}>
-        <div className="questionName">{question.name}</div>
-      </button>
+        if(question.id == "back") {
+          setQuestionCategory("")
+        } else {
+          await ask(question.id)
+          callback(question.id)
+        }
+      }}>
+      <div className="questionName">{question.name}</div>
+    </button>
   }
   function renderQuestionBox() {
 

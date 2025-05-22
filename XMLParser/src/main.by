@@ -42,7 +42,7 @@ def objectify() {
 
     cuisine = ["burger", "pizza", "coffee_shop", "ice_cream", "donut", "tea", "bubble tea", "pasta"]
     brands = ["McDonald's", "Wendy's"]
-    transit = ["subway", "Wendy's"]
+    transit = ["subway"]
 
     out = {}
 

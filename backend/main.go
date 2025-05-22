@@ -17,7 +17,7 @@ type UpdateInfo struct {
 	Pos types.Vector2 `json:"pos"`
 }
 
-type Request struct {
+type AskRequest struct {
 	Key string `json:"key"`
 }
 
@@ -77,7 +77,6 @@ func update(w http.ResponseWriter, r *http.Request) {
 	for i := range game.Hiders {
 		hiderspos = append(hiderspos, Players[game.Hiders[i]].Pos)
 	}
-	fmt.Printf("%v\n", hiderspos)
 	game.Hiderpos = lib.AverageNPoints(hiderspos)
 
 	// average the positions of the seekers
@@ -99,7 +98,6 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	encoded, err := json.Marshal(response)
 
-	fmt.Printf("%v", response)
 	if err != nil {
 		fmt.Printf("%v", err)
 		http.Error(w, "Error encoding game", http.StatusInternalServerError)
@@ -108,7 +106,6 @@ func update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	io.Writer.Write(w, encoded)
-	fmt.Printf("%v", response)
 }
 
 func ask(w http.ResponseWriter, r *http.Request) {
@@ -130,7 +127,7 @@ func ask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var parsedBody Request
+	var parsedBody AskRequest
 
 	err = json.Unmarshal(body, &parsedBody)
 	if err != nil {
@@ -141,7 +138,7 @@ func ask(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	_, exists := Players[parsedBody.Key]
+	player, exists := Players[parsedBody.Key]
 
 	if !exists {
 		http.Error(w, "Invalid Key", http.StatusForbidden)
@@ -149,7 +146,7 @@ func ask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, asked := range Games[parsedBody.Key].AskedQuestions {
+	for _, asked := range Games[player.Code].AskedQuestions {
 		if asked == m.Get("q") {
 			http.Error(w, "You cant ask the same question twice", http.StatusConflict)
 			io.WriteString(w, "{}")
@@ -157,10 +154,10 @@ func ask(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	game := askQuestion(Games[parsedBody.Key], m.Get("q"))
+	game := askQuestion(Games[player.Code], m.Get("q"))
 
 	game.AskedQuestions = append(game.AskedQuestions, m.Get("q"))
-	Games[parsedBody.Key] = game
+	Games[player.Code] = game
 
 	io.WriteString(w, "{}")
 }
@@ -209,7 +206,10 @@ func join(w http.ResponseWriter, r *http.Request) {
 			Hiderpos:       types.Vector2{X: 0, Y: 0},
 			Seekers:        []string{},
 			Seekerpos:      types.Vector2{X: 0, Y: 0},
-			Shapes:         types.Shapes{},
+			Shapes: types.Shapes{
+				Polygons: [][]types.Vector2{},
+				Circles:  []types.Circle{},
+			},
 		}
 	}
 
@@ -232,8 +232,6 @@ func join(w http.ResponseWriter, r *http.Request) {
 
 	Players[id] = player
 	Games[parsedBody.Code] = game
-
-	fmt.Printf("%v\n", game)
 
 	io.WriteString(w, fmt.Sprintf("{\"key\": \"%s\"}", id))
 }

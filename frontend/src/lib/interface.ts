@@ -24,3 +24,14 @@ export interface UpdateResponse {
     seekerpos:  Vector2
     shapes: Shapes
 }
+
+export interface JoinResponse {
+    key: string
+}
+
+export interface PlayerInfo {
+    team: string
+    no: number  
+    code: string
+    pos: Vector2
+}

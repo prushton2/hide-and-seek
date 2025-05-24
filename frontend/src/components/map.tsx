@@ -29,7 +29,7 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
     popupAnchor: [0, -12.5]
   });
 
-  function MyComponent() {
+  function StateComponent() {
     const map = useMap()
     const zoomListener = useMapEvent('zoom', () => {
       update(map.getCenter() as any, map.getZoom())
@@ -45,7 +45,7 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
     return (
       <MapContainer center={center as any} zoom={zoom} className='map'>
         <TileLayer url="https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"/>
-        <MyComponent />
+        <StateComponent />
         <Marker icon={hiderIcon} position={hider as any} />
         <Marker icon={seekerIcon} position={seeker as any} />
       </MapContainer>
@@ -55,7 +55,7 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
   return (
     <MapContainer center={center as any} zoom={zoom} className='map'>
       <TileLayer url="https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"/>
-      <MyComponent />
+      <StateComponent />
       <Marker icon={hiderIcon} position={hider as any} />
       <Marker icon={seekerIcon} position={seeker as any} />
       <Pane name="excludedArea" style={{opacity: "0.25"}}>

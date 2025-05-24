@@ -236,10 +236,55 @@ func join(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, fmt.Sprintf("{\"key\": \"%s\"}", id))
 }
 
+func playerInfo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Request-Method", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading body (is this a post request?)", http.StatusBadRequest)
+		io.WriteString(w, "{}")
+		return
+	}
+
+	var parsedBody AskRequest
+
+	err = json.Unmarshal(body, &parsedBody)
+	if err != nil {
+		http.Error(w, "Request body is not valid JSON", http.StatusBadRequest)
+		io.WriteString(w, "{}")
+		return
+	}
+
+	defer r.Body.Close()
+
+	player, exists := Players[parsedBody.Key]
+
+	if !exists {
+		http.Error(w, "Player doesnt exist", http.StatusNotFound)
+		io.WriteString(w, "{}")
+		return
+	}
+
+	_, exists = Games[player.Code]
+
+	if !exists {
+		http.Error(w, "Game doesnt exist", http.StatusNotFound)
+		io.WriteString(w, "{}")
+		return
+	}
+
+	bytes, _ := json.Marshal(player)
+
+	io.Writer.Write(w, bytes)
+}
+
 func main() {
 	http.HandleFunc("/ask", ask)
 	http.HandleFunc("/update", update)
 	http.HandleFunc("/join", join)
+	http.HandleFunc("/playerInfo", playerInfo)
 
 	fmt.Println("Running Server")
 	http.ListenAndServe(":3333", nil)

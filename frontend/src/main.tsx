@@ -13,8 +13,8 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App /> } />
-        <Route path="/hider" element={<Hider /> } />
-        <Route path="/seeker" element={<Seeker /> } />
+        <Route path="/hiders" element={<Hider /> } />
+        <Route path="/seekers" element={<Seeker /> } />
       </Routes>
     </BrowserRouter>
     

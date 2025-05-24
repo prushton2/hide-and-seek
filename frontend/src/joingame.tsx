@@ -9,6 +9,8 @@ function App() {
   const [code, setCode] = useState<string>("")
   const [rejoinButton, setRejoinButton] = useState<JSX.Element>(<></>)
   
+  // https://sonner.emilkowal.ski/
+
   async function joinGame() {
     let response = await join(code, team)
     localStorage.setItem("key", response.key)
@@ -66,10 +68,10 @@ function App() {
           value={code}
         />
         <br />
-        <button onClick={() => {setTeam("Hider")}} style={{backgroundColor: team == "Hider" ? "#103fa5" : "#1a1a1a"}}>
+        <button onClick={() => {setTeam("hiders")}} style={{backgroundColor: team == "hiders" ? "#103fa5" : "#1a1a1a"}}>
           Hider
         </button>
-        <button onClick={() => {setTeam("Seeker")}} style={{backgroundColor: team == "Seeker" ? "#103fa5" : "#1a1a1a"}}>
+        <button onClick={() => {setTeam("seekers")}} style={{backgroundColor: team == "seekers" ? "#103fa5" : "#1a1a1a"}}>
           Seeker
         </button>
         <br />

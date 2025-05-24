@@ -60,9 +60,11 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// update the players position
-	player.Pos = parsedBody.Pos
-	Players[parsedBody.Key] = player
+	// update the players position if they arent at 0,0
+	if !(parsedBody.Pos.X == 0 && parsedBody.Pos.Y == 0) {
+		player.Pos = parsedBody.Pos
+		Players[parsedBody.Key] = player
+	}
 
 	// check if game exists
 	game, exists := Games[player.Code]
@@ -232,6 +234,8 @@ func join(w http.ResponseWriter, r *http.Request) {
 
 	Players[id] = player
 	Games[parsedBody.Code] = game
+
+	fmt.Printf("%s: %v\n", id, player)
 
 	io.WriteString(w, fmt.Sprintf("{\"key\": \"%s\"}", id))
 }

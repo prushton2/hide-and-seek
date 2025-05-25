@@ -11,8 +11,14 @@ type Game struct {
 }
 
 type Shapes struct {
-	Polygons [][]Vector2 `json:"polygons"`
-	Circles  []Circle    `json:"circles"`
+	Polygons []Polygon `json:"polygons"`
+	Circles  []Circle  `json:"circles"`
+}
+
+type Polygon struct {
+	Shaded bool        `json:"shaded"`
+	Outer  []Vector2   `json:"outer"`
+	Holes  [][]Vector2 `json:"holes"`
 }
 
 type Circle struct {

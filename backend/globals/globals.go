@@ -12,6 +12,13 @@ var Bounds = []types.Vector2{
 	{X: 42.203745, Y: 42.526848},   // bottom to top
 }
 
+var Corners []types.Vector2 = []types.Vector2{
+	{X: Bounds[1].Y, Y: Bounds[0].Y}, // top right
+	{X: Bounds[1].X, Y: Bounds[0].Y}, // bottom right
+	{X: Bounds[1].X, Y: Bounds[0].X}, // bottom left
+	{X: Bounds[1].Y, Y: Bounds[0].X}, // top left
+}
+
 func GetLocation(name string) ([]types.Vector2, error) {
 	file, err := os.Open("globals/locations.json")
 	if err != nil {

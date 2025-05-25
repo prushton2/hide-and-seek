@@ -209,7 +209,7 @@ func join(w http.ResponseWriter, r *http.Request) {
 			Seekers:        []string{},
 			Seekerpos:      types.Vector2{X: 0, Y: 0},
 			Shapes: types.Shapes{
-				Polygons: [][]types.Vector2{},
+				Polygons: []types.Polygon{},
 				Circles:  []types.Circle{},
 			},
 		}
@@ -285,6 +285,33 @@ func playerInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	Players["0bac5ee8-d63f-484b-88ef-1d5751036a73"] = types.Player{
+		Team: "hiders",
+		No:   0,
+		Code: "1513",
+		Pos:  types.Vector2{X: 42.352157, Y: -71.045398},
+	}
+
+	Players["1b1ff218-c083-45c0-86f7-c0069a9dd87e"] = types.Player{
+		Team: "seekers",
+		No:   0,
+		Code: "1513",
+		Pos:  types.Vector2{X: 42.37157155614878, Y: -71.03946867851995},
+	}
+
+	Games["1513"] = types.Game{
+		Id:             "1513",
+		AskedQuestions: []string{},
+		Hiders:         []string{"0bac5ee8-d63f-484b-88ef-1d5751036a73"},
+		Hiderpos:       types.Vector2{X: 42.352157, Y: -71.045398},
+		Seekers:        []string{"1b1ff218-c083-45c0-86f7-c0069a9dd87e"},
+		Seekerpos:      types.Vector2{X: 42.37157155614878, Y: -71.03946867851995},
+		Shapes: types.Shapes{
+			Polygons: []types.Polygon{},
+			Circles:  []types.Circle{},
+		},
+	}
+
 	http.HandleFunc("/ask", ask)
 	http.HandleFunc("/update", update)
 	http.HandleFunc("/join", join)

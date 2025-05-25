@@ -58,10 +58,12 @@ func AverageNPoints(points []types.Vector2) types.Vector2 {
 }
 
 func GetClosestPoint(locations []types.Vector2, position types.Vector2) (types.Vector2, int) {
+	position = convertLatLongAndXY(position)
 	var closest int = 0
 	var closestDist float64 = -1.0
 	for i := range locations {
-		var relDist float64 = math.Pow(position.X-locations[i].X, 2) + math.Pow(position.Y-locations[i].Y, 2)
+		other := convertLatLongAndXY(locations[i])
+		var relDist float64 = math.Pow(position.X-other.X, 2) + math.Pow(position.Y-other.Y, 2)
 		if relDist < closestDist || i == 0 {
 			closest = i
 			closestDist = relDist

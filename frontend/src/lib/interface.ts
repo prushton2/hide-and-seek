@@ -9,9 +9,15 @@ export interface Circle {
     radius: number
 }
 
+export interface Polygon {
+    shaded: boolean,
+    outer: Vector2[]
+    holes: Vector2[][]
+}
+
 export interface Shapes {
     fullHighlight: boolean
-    polygons: Vector2[][]
+    polygons: Polygon[]
     circles: Circle[]
 }
 

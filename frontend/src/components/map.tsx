@@ -1,19 +1,23 @@
 import "./map.css";
 import 'leaflet/dist/leaflet.css';
-import { Pane, MapContainer, TileLayer, Polygon, Marker, Circle, useMap, useMapEvent } from 'react-leaflet';
-import { Icon } from 'leaflet';
+import type { JSX } from "react";
+import { Pane, MapContainer, TileLayer, Marker, Circle, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
+import { Icon, type PathOptions } from 'leaflet';
+import * as turf from '@turf/turf';
+import type { Position } from "geojson";
+
+import type { Polygon, Shapes } from "../lib/interface";
+import { Donut } from '../Donut/Donut.tsx'
 import hidericon from "../assets/H.png"
 import seekericon from "../assets/S.png"
-import type { Shapes } from "../lib/interface";
-import { Donut } from '../Donut/Donut.tsx'
-
 
 function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], update: (center: number[], zoom: number) => void}) {
   const shaded = { 
     color: "blue",
     stroke: false,
     fillOpacity: 1,
-  };
+    fillRule: "nonzero"
+  } as PathOptions;
 
   let hiderIcon: Icon = new Icon({
     iconUrl: hidericon,
@@ -29,6 +33,31 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
     popupAnchor: [0, -12.5]
   });
 
+  function renderPolygon(polygon: Polygon, key: string = "0"): JSX.Element {
+    // leaflet is stupid and reads geojson data backwards
+    let positions: Position[] = polygon.outer.map((e) => {return [e.Y, e.X] as Position})
+    positions.push(positions[0])
+
+    let poly = turf.polygon([positions])
+    
+    for(let i = 0; i < polygon.holes.length; i++) {
+      let hole: Position[] = polygon.holes[i].map((e) => {return [e.Y, e.X] as Position})
+      hole.push(hole[0])
+
+      let cutpoly = turf.polygon([hole])
+      let diff = turf.difference(turf.featureCollection([poly, cutpoly]))
+
+      let coordinates = diff?.geometry.coordinates
+
+      if(coordinates != null) {
+        poly = turf.polygon(coordinates as Position[][])
+      }
+
+    }
+
+    return <GeoJSON key={key} data={poly} style={shaded}/>
+  }
+  
   function StateComponent() {
     const map = useMap()
     const zoomListener = useMapEvent('zoom', () => {
@@ -59,7 +88,6 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
       <Marker icon={hiderIcon} position={hider as any} />
       <Marker icon={seekerIcon} position={seeker as any} />
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
-
         {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
           return e.shaded ? <Circle 
             key={`circle ${i}`}
@@ -77,11 +105,7 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
         })}
 
         {shapes.polygons == null ? <></> : shapes.polygons.map((e, i) => {
-          return <Polygon
-            key={`polygon ${i}`}
-            positions={e.map((e) => { return [e.X, e.Y] })}
-            pathOptions={shaded}
-          />
+          return renderPolygon(e, `Polygon ${i}`)
         })}
         
       </Pane>

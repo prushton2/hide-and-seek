@@ -27,25 +27,31 @@ def objectify():
     root=tree.getroot()
     cuisine=["burger","pizza","coffee_shop","ice_cream","donut","tea","bubble tea","pasta"]
     brands=["McDonald's","Wendy's"]
-    transit=["subway","Wendy's"]
+    transit=["light_rail","subway"]
+    # <tag k="station" v="light_rail"/>
+    # <tag k="station" v="subway"/>
     out={}
     for i in brands:
         out[i]=[]
     for i in cuisine:
+        out[i]=[]
+    for i in transit:
         out[i]=[]
     for item in root.findall('node'):
         for child in item:
             # print(child)
             if(child.attrib["k"]=="brand"and child.attrib["v"]in brands):
                 out[child.attrib["v"]].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
+                break
             if(child.attrib["k"]=="cuisine"and anyContentsMatch(child.attrib["v"].split(";"),cuisine)):
                 for i in child.attrib["v"].split(";"):
                     try:
                         out[i].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
+                        break
                     except:pass
-            # if(child.attrib["k"] == "subway" and child.attrib["v"] == "yes") {
-            #     out[child.attrib["v"]].append([float(item.attrib["lat"]), float(item.attrib["lon"])])
-            # }
+            if(child.attrib["k"]=="station"and anyContentsMatch(child.attrib["v"],transit)):
+                out[child.attrib["v"]].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
+                break
     with open("locations.json","w")as file:
         file.write(json.dumps(out))
 if __name__=="__main__":

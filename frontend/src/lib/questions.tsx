@@ -5,31 +5,34 @@ export interface question {
 };
 
 export const questions: { [key: string]: question } = {
-    "matching-trainstation": {
-        name: "Same Train Station",
-        id: "matching-trainstation",
+    "matching-subway": {
+        name: "Same Subway Station",
+        id: "matching-subway",
         icon: ""
     },
-    "matching-hospital": {
-        name: "Same Hospital",
-        id: "matching-hospital",
+    "matching-light_rail": {
+        name: "Same Light Rail Stop",
+        id: "matching-light_rail",
         icon: ""
     },
-    "matching-coastline": {
-        name: "Same Coastline",
-        id: "matching-coastline",
+    "matching-McDonald's": {
+        name: "Same McDonald's",
+        id: "matching-McDonald's",
         icon: ""
     },
+
     "measure-hospital": {
         name: "Hospital",
         id: "measure-hospital",
         icon: ""
     },
+    
     "thermometer-4min": {
         name: "4 min",
         id: "thermometer-4min",
         icon: ""
     },
+    
     "tentacles-McDonald's": {
         name: "McDonald's",
         id: "tentacles-McDonald's",
@@ -45,6 +48,7 @@ export const questions: { [key: string]: question } = {
         id: "tentacles-burger",
         icon: ""
     },
+    
     "radar-0.5mi": {
         name: "Half Mile Radar",
         id: "radar-0.5mi",

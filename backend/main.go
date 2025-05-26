@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sync"
 
 	"github.com/google/uuid"
 )
@@ -26,7 +27,9 @@ type JoinRequest struct {
 	Code string `json:"code"`
 }
 
+var GamesMutex sync.RWMutex = sync.RWMutex{}
 var Games map[string]types.Game = map[string]types.Game{}
+var PlayersMutex sync.RWMutex = sync.RWMutex{}
 var Players map[string]types.Player = map[string]types.Player{}
 
 func update(w http.ResponseWriter, r *http.Request) {
@@ -62,8 +65,10 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	// update the players position if they arent at 0,0
 	if !(parsedBody.Pos.X == 0 && parsedBody.Pos.Y == 0) {
+		PlayersMutex.Lock()
 		player.Pos = parsedBody.Pos
 		Players[parsedBody.Key] = player
+		PlayersMutex.Unlock()
 	}
 
 	// check if game exists
@@ -89,7 +94,9 @@ func update(w http.ResponseWriter, r *http.Request) {
 	game.Seekerpos = lib.AverageNPoints(seekerspos)
 
 	// write to game
+	GamesMutex.Lock()
 	Games[player.Code] = game
+	GamesMutex.Unlock()
 
 	response := types.UpdateResponse{
 		AskedQuestions: game.AskedQuestions,
@@ -159,7 +166,9 @@ func ask(w http.ResponseWriter, r *http.Request) {
 	game := askQuestion(Games[player.Code], m.Get("q"))
 
 	game.AskedQuestions = append(game.AskedQuestions, m.Get("q"))
+	GamesMutex.Lock()
 	Games[player.Code] = game
+	GamesMutex.Unlock()
 
 	io.WriteString(w, "{}")
 }
@@ -232,8 +241,13 @@ func join(w http.ResponseWriter, r *http.Request) {
 		Pos:  types.Vector2{X: 0, Y: 0},
 	}
 
+	PlayersMutex.Lock()
 	Players[id] = player
+	PlayersMutex.Unlock()
+
+	GamesMutex.Lock()
 	Games[parsedBody.Code] = game
+	GamesMutex.Unlock()
 
 	fmt.Printf("%s: %v\n", id, player)
 

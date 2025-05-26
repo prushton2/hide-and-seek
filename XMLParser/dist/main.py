@@ -25,33 +25,52 @@ def trimFatToFile():
 def objectify():
     tree=ET.parse("./out.xml")
     root=tree.getroot()
-    cuisine=["burger","pizza","coffee_shop","ice_cream","donut","tea","bubble tea","pasta"]
-    brands=["McDonald's","Wendy's"]
-    transit=["light_rail","subway"]
-    # <tag k="station" v="light_rail"/>
-    # <tag k="station" v="subway"/>
+    le_map=[
+    {
+    "tags":[
+    ["railway","station"],
+    ["subway","yes"]
+    ],
+    "out":"subway"
+    },{
+    "tags":[
+    ["railway","station"],
+    ["light_rail","yes"]
+    ],
+    "out":"greenline"
+    },{
+    "tags":[
+    ["railway","station"],
+    ["train","yes"]
+    ],
+    "out":"cr"
+    },{
+    "tags":[
+    ["healthcare","hospital"]
+    ],
+    "out":"hospital"
+    },{
+    "tags":[
+    ["brand","Raising Cane's"]
+    ],
+    "out":"raisingcanes"
+    }
+    ]
     out={}
-    for i in brands:
-        out[i]=[]
-    for i in cuisine:
-        out[i]=[]
-    for i in transit:
-        out[i]=[]
+    for key in le_map:
+        out[key["out"]]=[]
     for item in root.findall('node'):
-        for child in item:
-            # print(child)
-            if(child.attrib["k"]=="brand"and child.attrib["v"]in brands):
-                out[child.attrib["v"]].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
-                break
-            if(child.attrib["k"]=="cuisine"and anyContentsMatch(child.attrib["v"].split(";"),cuisine)):
-                for i in child.attrib["v"].split(";"):
-                    try:
-                        out[i].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
-                        break
-                    except:pass
-            if(child.attrib["k"]=="station"and anyContentsMatch(child.attrib["v"],transit)):
-                out[child.attrib["v"]].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
-                break
+        for condition in le_map:
+            # Iterate over every tag
+            contains=0
+            for tag in item:
+                # if the tag matches a condition, increment contains
+                for requirement in condition["tags"]:
+                    if(tag.attrib["k"]==requirement[0]and tag.attrib["v"]==requirement[1]):
+                        contains+=1
+            # if contains is the number of tags, every tag matched
+            if(contains==len(condition["tags"])):
+                out[condition["out"]].append([float(item.attrib["lat"]),float(item.attrib["lon"])])
     with open("locations.json","w")as file:
         file.write(json.dumps(out))
 if __name__=="__main__":

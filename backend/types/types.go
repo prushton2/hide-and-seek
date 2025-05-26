@@ -22,9 +22,8 @@ type Polygon struct {
 }
 
 type Circle struct {
-	Shaded bool    `json:"shaded"`
-	Center Vector2 `json:"center"`
-	Radius int     `json:"radius"`
+	Shaded  bool           `json:"shaded"`
+	Circles []CenterRadius `json:"circles"`
 }
 
 type GameInfo struct {
@@ -34,6 +33,11 @@ type GameInfo struct {
 type Vector2 struct {
 	X float64 `json:"X"`
 	Y float64 `json:"Y"`
+}
+
+type CenterRadius struct {
+	Center Vector2 `json:"center"`
+	Radius int     `json:"radius"`
 }
 
 type Player struct {

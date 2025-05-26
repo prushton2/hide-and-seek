@@ -47,8 +47,12 @@ func askQuestion(ctx types.Game, id string) types.Game {
 func radar(ctx types.Game, radiusMeters int) types.Circle { //handles radar calculations in metric
 	distance := lib.GetDistanceBetweenLatLong(ctx.Hiderpos, ctx.Seekerpos)
 	var circle types.Circle = types.Circle{
-		Radius: radiusMeters,
-		Center: ctx.Seekerpos,
+		Circles: []types.CenterRadius{
+			{
+				Radius: radiusMeters,
+				Center: ctx.Seekerpos,
+			},
+		},
 		Shaded: distance > radiusMeters,
 	}
 	return circle

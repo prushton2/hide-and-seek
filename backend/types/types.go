@@ -48,8 +48,9 @@ type Player struct {
 }
 
 type UpdateResponse struct {
-	AskedQuestions []string `json:"askedQuestions"`
-	Hiderpos       Vector2  `json:"hiderpos"`
-	Seekerpos      Vector2  `json:"seekerpos"`
-	Shapes         Shapes   `json:"shapes"`
+	AskedQuestions []string  `json:"askedQuestions"`
+	Hiderpos       Vector2   `json:"hiderpos"`
+	Seekerpos      Vector2   `json:"seekerpos"`
+	Shapes         Shapes    `json:"shapes"`
+	Bbox           []Vector2 `json:"bbox"`
 }

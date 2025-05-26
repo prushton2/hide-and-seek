@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"hideandseek/globals"
 	"hideandseek/lib"
 	"hideandseek/types"
 	"io"
@@ -103,6 +104,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 		Hiderpos:       game.Hiderpos,
 		Seekerpos:      game.Seekerpos,
 		Shapes:         game.Shapes,
+		Bbox:           globals.Corners,
 	}
 
 	encoded, err := json.Marshal(response)

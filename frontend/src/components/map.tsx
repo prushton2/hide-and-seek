@@ -1,17 +1,16 @@
 import "./map.css";
 import 'leaflet/dist/leaflet.css';
 import type { JSX } from "react";
-import { Pane, MapContainer, TileLayer, Marker, Circle, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
+import { Pane, MapContainer, TileLayer, Marker, useMap, useMapEvent, GeoJSON } from 'react-leaflet';
 import { Icon, type PathOptions } from 'leaflet';
 import * as turf from '@turf/turf';
-import type { Position } from "geojson";
+import type { Position, Feature } from "geojson";
 
-import type { Polygon, Shapes } from "../lib/interface";
-import { Donut } from '../Donut/Donut.tsx'
+import type { Polygon, Shapes, Circle, Vector2 } from "../lib/interface";
 import hidericon from "../assets/H.png"
 import seekericon from "../assets/S.png"
 
-function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], update: (center: number[], zoom: number) => void}) {
+function Map({center, zoom, shapes, hider, seeker, bbox, update}: {center: number[], zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], bbox: Vector2[], update: (center: number[], zoom: number) => void}) {
   const shaded = { 
     color: "blue",
     stroke: false,
@@ -57,7 +56,23 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
 
     return <GeoJSON key={key} data={poly} style={shaded}/>
   }
-  
+
+  function renderCircle(circle: Circle, key: string = "0"): JSX.Element {
+    let polys: Feature[] = []
+
+    for(let i = 0; i < circle.circles.length; i++) {
+      polys.push(turf.circle([circle.circles[0].center.Y, circle.circles[i].center.X], circle.circles[i].radius, {units: "meters"}))
+    }
+
+    console.log(bbox)
+
+    if(circle.shaded) {
+      return <GeoJSON key={key} data={turf.featureCollection(polys)} style={shaded}/>
+    }
+
+    return <></>
+  }
+
   function StateComponent() {
     const map = useMap()
     const zoomListener = useMapEvent('zoom', () => {
@@ -88,7 +103,7 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
       <Marker icon={hiderIcon} position={hider as any} />
       <Marker icon={seekerIcon} position={seeker as any} />
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
-        {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
+        {<></>/* {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
           return e.shaded ? <Circle 
             key={`circle ${i}`}
             radius={e.radius}
@@ -102,6 +117,10 @@ function Map({center, zoom, shapes, hider, seeker, update}: {center: number[], z
             center={[e.center.X, e.center.Y] as any}
             pathOptions={shaded}
           />
+        })} */}
+
+        {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
+          return renderCircle(e, `Circle ${i}`)
         })}
 
         {shapes.polygons == null ? <></> : shapes.polygons.map((e, i) => {

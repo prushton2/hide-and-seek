@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Map from './components/map.tsx'
 import { questions, type question } from './lib/questions.tsx'
 import { update, ask } from "./lib/API.tsx"
-import type { Shapes } from './lib/interface.ts'
+import type { Shapes, Vector2 } from './lib/interface.ts'
 
 function Questions({callback}: {callback: (question: string) => void}) {
   const [questionCategory, setQuestionCategory] = useState<string>("");
@@ -74,21 +74,23 @@ function Questions({callback}: {callback: (question: string) => void}) {
 function Seeker() {
   const [shapes, setShapes] = useState<Shapes>();
   const [seeker, setSeeker] = useState<number[]>([0,0]);
-  const [rerenderKey, setRerenderKey] = useState(0);
-  const [center, setCenter] = useState([42.36041830331139, -71.0580009624248]);
-  const [zoom, setZoom] = useState(13);
+  const [bbox, setBbox] = useState<Vector2[]>([])
+
+  let center: number[] = [42.36041830331139, -71.0580009624248]
+  let zoom: number = 13
 
   async function updateQuestions() {
     let response = await update()
+    
+    if(bbox.length == 0) {
+      setBbox(response.bbox)
+    }
 
     setShapes(response.shapes);
 
     try {
       setSeeker([response.seekerpos.X, response.seekerpos.Y])
-    } catch {
-      setSeeker([0,0])
-    }
-    setRerenderKey(rerenderKey+1)
+    } catch {}
   }
 
   useEffect(() => {
@@ -99,10 +101,11 @@ function Seeker() {
   return (
     <div className="container">
       <Map
-        key={rerenderKey}
+        key={""}
         center={center} zoom={zoom}
-        shapes={shapes} hider={[0,0]} seeker={seeker}
-        update={(center, zoom) => {setCenter(center), setZoom(zoom)}}
+        shapes={shapes} bbox={bbox}
+        hider={[0,0]} seeker={seeker}
+        update={(c, z) => {center = c; zoom = z}}
       />
       
       <Questions key={"q"} callback={(question) => {updateQuestions()}}/>

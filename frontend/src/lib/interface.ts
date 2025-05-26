@@ -3,10 +3,15 @@ export interface Vector2 {
     Y: number
 }
 
-export interface Circle {
-    shaded: boolean
+export interface CenterRadius {
     center: Vector2, 
     radius: number
+}
+
+
+export interface Circle {
+    shaded: boolean,
+    circles: CenterRadius[]
 }
 
 export interface Polygon {
@@ -22,13 +27,11 @@ export interface Shapes {
 }
 
 export interface UpdateResponse {
-    id: string,
-    askedQuestions: string[],
-    hiderspos:  Vector2[]
-    hiderpos:   Vector2
-    seekerspos: Vector2[]
-    seekerpos:  Vector2
+    askedQuestions: string[]
+    hiderpos: Vector2
+    seekerpos: Vector2
     shapes: Shapes
+    bbox: Vector2[]
 }
 
 export interface JoinResponse {

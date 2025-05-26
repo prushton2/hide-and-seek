@@ -58,19 +58,36 @@ function Map({center, zoom, shapes, hider, seeker, bbox, update}: {center: numbe
   }
 
   function renderCircle(circle: Circle, key: string = "0"): JSX.Element {
-    let polys: Feature[] = []
+    let circles: Feature[] = []
 
     for(let i = 0; i < circle.circles.length; i++) {
-      polys.push(turf.circle([circle.circles[0].center.Y, circle.circles[i].center.X], circle.circles[i].radius, {units: "meters"}))
+      circles.push(turf.circle([circle.circles[0].center.Y, circle.circles[i].center.X], circle.circles[i].radius, {units: "meters", steps: 50}))
     }
-
-    console.log(bbox)
 
     if(circle.shaded) {
-      return <GeoJSON key={key} data={turf.featureCollection(polys)} style={shaded}/>
+      return <GeoJSON key={key} data={turf.featureCollection(circles)} style={shaded}/>
     }
 
-    return <></>
+    let bounds: Position[] = bbox.map((e) => {return [e.Y, e.X] as Position})
+    bounds.push(bounds[0])
+
+    let poly = turf.polygon([bounds])
+
+    for(let i = 0; i < circles.length; i++) {
+      // @ts-ignore
+      let geo: Positon[] = circles[i].geometry["coordinates"][0] as Position[]
+
+      let cutpoly = turf.polygon([geo])
+      let diff = turf.difference(turf.featureCollection([poly, cutpoly]))
+
+      let coordinates = diff?.geometry.coordinates
+
+      if(coordinates != null) {
+        poly = turf.polygon(coordinates as Position[][])
+      }
+    }
+
+    return <GeoJSON key={key} data={poly} style={shaded} />
   }
 
   function StateComponent() {
@@ -103,22 +120,6 @@ function Map({center, zoom, shapes, hider, seeker, bbox, update}: {center: numbe
       <Marker icon={hiderIcon} position={hider as any} />
       <Marker icon={seekerIcon} position={seeker as any} />
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
-        {<></>/* {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
-          return e.shaded ? <Circle 
-            key={`circle ${i}`}
-            radius={e.radius}
-            center={[e.center.X, e.center.Y]}
-            pathOptions={shaded}
-          /> : 
-          <Donut
-            key={`donut ${i}`}
-            radius={1000000000} 
-            innerRadius={e.radius}
-            center={[e.center.X, e.center.Y] as any}
-            pathOptions={shaded}
-          />
-        })} */}
-
         {shapes.circles == null ? <></> : shapes.circles.map((e, i) => {
           return renderCircle(e, `Circle ${i}`)
         })}

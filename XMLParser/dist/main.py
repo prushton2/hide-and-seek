@@ -37,7 +37,7 @@ def objectify():
     ["railway","station"],
     ["light_rail","yes"]
     ],
-    "out":"greenline"
+    "out":"light_rail"
     },{
     "tags":[
     ["railway","station"],
@@ -54,11 +54,25 @@ def objectify():
     ["brand","Raising Cane's"]
     ],
     "out":"raisingcanes"
+    },{
+    "tags":[
+    ["amenity","ferry_terminal"],
+    ["ferry","yes"]
+    ],
+    "out":"ferry"
     }
     ]
+    hardcodes={
+    "airport":[[42.3655682515009,-71.009620567349]]
+    }
     out={}
     for key in le_map:
         out[key["out"]]=[]
+    for key in hardcodes:
+        try:
+            out[key].extend(hardcodes[key])
+        except:
+            out[key]=hardcodes[key]
     for item in root.findall('node'):
         for condition in le_map:
             # Iterate over every tag

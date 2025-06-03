@@ -177,15 +177,15 @@ const questionsMap: { [key: string]: Question } = {
 
     // Tentacles
     
-    "tentacles-McDonald's": {
+    "tentacles-mcdonalds": {
         name: "McDonald's",
-        id: "tentacles-McDonald's",
+        id: "tentacles-mcdonalds",
         icon: "",
         replaceString: ["McDonald's", "1 mile"]
     },
     "tentacles-Wendy's": {
         name: "Wendy's",
-        id: "tentacles-Wendy's",
+        id: "tentacles-wendys",
         icon: "",
         replaceString: ["Wendy's", "1 mile"]
     },

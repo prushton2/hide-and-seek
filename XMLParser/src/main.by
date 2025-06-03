@@ -37,7 +37,7 @@ def trimFatToFile() {
 }
 
 def objectify() {
-    tree = ET.parse("./out.xml")
+    tree = ET.parse("./map.xml")
     root = tree.getroot()
 
     le_map = [
@@ -66,11 +66,6 @@ def objectify() {
             "out": "hospital"
         },{
             "tags": [
-                ["brand", "Raising Cane's"]
-            ],
-            "out": "raisingcanes"
-        },{
-            "tags": [
                 ["amenity", "ferry_terminal"],
                 ["ferry", "yes"]
             ],
@@ -80,6 +75,21 @@ def objectify() {
                 ["tourism", "museum"]
             ],
             "out": "museum"
+        },{
+            "tags": [
+                ["brand", "Raising Cane's"]
+            ],
+            "out": "raisingcanes"
+        },{
+            "tags": [
+                ["brand", "McDonald's"]
+            ],
+            "out": "mcdonalds"
+        },{
+            "tags": [
+                ["brand", "Wendy's"]
+            ],
+            "out": "wendys"
         }
     ]
 

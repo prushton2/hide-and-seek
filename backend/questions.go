@@ -20,7 +20,7 @@ func askQuestion(ctx types.Game, id string) types.Game {
 		ctx.Shapes.Circles = append(ctx.Shapes.Circles, circles)
 
 	case "tentacles":
-		polygons := tentacles(ctx, strings.Split(id, "-")[1])
+		polygons := tentacles(ctx, strings.Split(id, "-")[1], lib.FeetToMeters(1*types.Mile))
 		ctx.Shapes.Polygons = append(ctx.Shapes.Polygons, polygons...)
 
 	case "radar":
@@ -99,13 +99,20 @@ func measure(ctx types.Game, location string) types.Circle {
 	}
 
 	for i := range allLocations {
+
 		circle.Circles = append(circle.Circles, types.CenterRadius{Center: allLocations[i], Radius: SeekerDistance})
 	}
 
 	return circle
 }
 
-func tentacles(ctx types.Game, location string) []types.Polygon {
+func tentacles(ctx types.Game, location string, radius int) []types.Polygon {
+	// the hider and seeker must be within radius meters
+	if lib.GetDistanceBetweenLatLong(ctx.Hiderpos, ctx.Seekerpos) > radius {
+		fmt.Printf("%v\n", lib.GetDistanceBetweenLatLong(ctx.Hiderpos, ctx.Seekerpos))
+		return []types.Polygon{}
+	}
+
 	allLocations, err := globals.GetLocation(location)
 
 	if err != nil {
@@ -119,6 +126,10 @@ func tentacles(ctx types.Game, location string) []types.Polygon {
 
 	for i := range allLocations {
 		if i == closestIndex {
+			continue
+		}
+
+		if lib.GetDistanceBetweenLatLong(ctx.Seekerpos, allLocations[i]) > radius {
 			continue
 		}
 

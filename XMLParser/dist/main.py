@@ -23,7 +23,7 @@ def trimFatToFile():
     with open("./out.xml","w")as xml:
         xml.write(out)
 def objectify():
-    tree=ET.parse("./out.xml")
+    tree=ET.parse("./map.xml")
     root=tree.getroot()
     le_map=[
     {
@@ -51,15 +51,30 @@ def objectify():
     "out":"hospital"
     },{
     "tags":[
+    ["amenity","ferry_terminal"],
+    ["ferry","yes"]
+    ],
+    "out":"ferry"
+    },{
+    "tags":[
+    ["tourism","museum"]
+    ],
+    "out":"museum"
+    },{
+    "tags":[
     ["brand","Raising Cane's"]
     ],
     "out":"raisingcanes"
     },{
     "tags":[
-    ["amenity","ferry_terminal"],
-    ["ferry","yes"]
+    ["brand","McDonald's"]
     ],
-    "out":"ferry"
+    "out":"mcdonalds"
+    },{
+    "tags":[
+    ["brand","Wendy's"]
+    ],
+    "out":"wendys"
     }
     ]
     hardcodes={

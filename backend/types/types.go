@@ -1,5 +1,7 @@
 package types
 
+const Mile int = 5280
+
 type Game struct {
 	Id             string   `json:"id"`
 	AskedQuestions []string `json:"askedQuestions"`

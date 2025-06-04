@@ -1,9 +1,10 @@
 import { useState, type JSX } from "react";
 import { ask } from "./API";
 
-export function Questions({callback}: {callback: (question: string) => void}) {
+export function Questions({askedQuestions, callback}: {askedQuestions: string[], callback: (question: string) => void}) {
     const [state, setState] = useState<string>("showCategories"); // state (showCategories, showQuestions, showQuestion)
-    const [info, setInfo] = useState<string[]>([])                  // info about the state (question being shown, category being shown, etc)
+    const [category, setCategory] = useState<string>("")          // info about the state (question being shown, category being shown, etc)
+    const [question, setQuestion] = useState<string>("")                
 
     function renderCategories() {
         let arr: JSX.Element[] = []
@@ -12,7 +13,7 @@ export function Questions({callback}: {callback: (question: string) => void}) {
             arr.push(
                 <button key={category[0]}
                     className="questionCategory" 
-                    onClick={() => {setState("showQuestions"); setInfo([category[0]])}}>
+                    onClick={() => {setState("showQuestions"); setCategory(category[0])}}>
                     {category[1].name}
                 </button>
             )
@@ -23,21 +24,21 @@ export function Questions({callback}: {callback: (question: string) => void}) {
     function renderQuestions() {
         
         let arr: JSX.Element[] = Object.entries(questionsMap)
-            .filter((e: [string, Question]) => e[0].startsWith(info[0]))
-            .map((question: [string, Question]) => {
-                return <button key={question[1].id} className="question" onClick={(e) => {setState("showQuestion"); setInfo([question[0], info[0]])}}>
-                    {question[1].name}
+            .filter((e: [string, Question]) => e[0].startsWith(category))
+            .map((q: [string, Question]) => {
+                return <button key={q[1].id} className="question" style={{backgroundColor: askedQuestions.indexOf(q[0]) >= 0 ? "#545454" : "#141414" }} onClick={(e) => {setState("showQuestion"); setQuestion(q[0])}}>
+                    {q[1].name}
                 </button>
             })
 
         arr.unshift(
-            <button key="back" className="question" onClick={() => { setState("showCategories"); setInfo([]); }}>
+            <button key="back" className="question" onClick={() => { setState("showCategories"); setCategory(""); setQuestion("") }}>
                 <div className="questionName">Back</div>
             </button>
         );
             
         return <>
-            {questionCategories[info[0]].desc}
+            {questionCategories[category].desc}
             <div className="questionContainer">    
                 {arr}
             </div>
@@ -45,22 +46,23 @@ export function Questions({callback}: {callback: (question: string) => void}) {
     }
 
     function renderQuestion() {
-        let description = questionCategories[info[1]].desc
+        let description = questionCategories[category].desc
 
-        questionsMap[info[0]].replaceString.forEach((e) => {
+        questionsMap[question].replaceString.forEach((e) => {
             description = description.replace("__", e)
         })
 
         return <div>
-            <button onClick={(e) => { setState("showQuestions"); setInfo([info[1]]) }}>Back</button>
-            <h2>{questionCategories[info[1]].name}: {questionsMap[info[0]].name}</h2>
+            <button onClick={(e) => { setState("showQuestions"); setQuestion("") }}>Back</button>
+            <h2>{questionCategories[category].name}: {questionsMap[question].name}</h2>
             {description}
             <br />
             <br />
             <br />
-            <button
-                onClick={async(e) => { await ask(info[0]); callback(info[0]); setState("showCategories"); setInfo([]) }}
-            >Ask</button>
+            {askedQuestions.indexOf(questionCategories[category].desc) >= 1 ?
+                <button onClick={async() => { await ask(question); callback(question); setState("showCategories"); setQuestion("") }}>Ask</button>
+                : <label>Question Asked</label>
+            }
         </div>
     }
 
@@ -96,10 +98,10 @@ const questionCategories: { [key: string]: Category } = {
         name: "Measuring",
         desc: "Are you closer or farther from your nearest __ than me?"
     },
-    "thermometer": {
-        name: "Thermometer",
-        desc: "Ive traveled __, am I closer or farther to you?"
-    },
+    // "thermometer": {
+    //     name: "Thermometer",
+    //     desc: "Ive traveled __, am I closer or farther to you?"
+    // },
     "tentacles": {
         name: "Tentacles",
         desc: "Out of all the __ within __ of me, which one are you closest to?"

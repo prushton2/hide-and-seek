@@ -8,6 +8,7 @@ import type { Shapes, Vector2 } from './lib/interface.ts'
 function Seeker() {
   const [shapes, setShapes] = useState<Shapes>();
   const [seeker, setSeeker] = useState<number[]>([0,0]);
+  const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
   const [bbox, setBbox] = useState<Vector2[]>([])
 
   let center: number[] = [42.36041830331139, -71.0580009624248]
@@ -21,6 +22,7 @@ function Seeker() {
     }
 
     setShapes(response.shapes);
+    setAskedQuestions(response.askedQuestions)
 
     try {
       setSeeker([response.seekerpos.X, response.seekerpos.Y])
@@ -42,7 +44,7 @@ function Seeker() {
         update={(c, z) => {center = c; zoom = z}}
       />
       
-      <Questions key={"q"} callback={(question) => {updateQuestions()}}/>
+      <Questions key={"q"} askedQuestions={askedQuestions} callback={(question) => {updateQuestions()}}/>
     </div>
   )
 }

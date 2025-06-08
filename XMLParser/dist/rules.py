@@ -1,3 +1,4 @@
+from bigxml import Parser,xml_handle_element,xml_handle_text
 rules=[
 {
 "tags":[
@@ -55,3 +56,24 @@ rules=[
 "out":"parks"
 }
 ]
+def checkRules(node,children=[]):
+    @xml_handle_element("tag")
+    def readChildren(node):
+        yield[node.attributes["k"],node.attributes["v"]]
+    tags=[]
+    if(children==[]):
+        tags=list(node.iter_from(readChildren))
+    else:
+        for child in children:
+            tags.append([child.attributes["k"],child.attributes["v"]])
+    if(tags==[]):
+        return None
+    for rule in rules:
+        tag_count=0
+        for required_tag in rule["tags"]:
+            for tag in tags:
+                if(tag==required_tag):
+                    tag_count+=1
+        if(tag_count==len(rule["tags"])):
+            return rule
+    return None

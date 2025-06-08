@@ -1,1 +1,3 @@
 bython-prushton
+bigxml
+shapely

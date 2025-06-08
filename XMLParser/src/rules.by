@@ -54,7 +54,7 @@ rules = [
         "tags": [
             ["leisure", "park"]
         ],
-        "out": "parks"
+        "out": "park"
     }
 ]
 

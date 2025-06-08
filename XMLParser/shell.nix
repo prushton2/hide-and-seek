@@ -32,6 +32,7 @@ let
   };
   
   pkgs = import (
+    # Latest as of 8 June 2025
     fetchTarball "https://github.com/NixOS/nixpkgs/archive/8207ad0d501d.tar.gz"
   ) {};
 in pkgs.mkShell {

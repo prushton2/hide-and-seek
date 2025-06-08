@@ -2,15 +2,15 @@ from bigxml import Parser,xml_handle_element,xml_handle_text
 import shapely
 from rules import rules,checkRules
 import json
-file_path='./mapsmall.xml'
+file_path='./map.xml'
 ref_map={}
 loc_map={}
 def addLocation(category,lat,lon):
     try:
-        loc_map[category].append([lat,lon])
+        loc_map[category].append([str(lat),str(lon)])
     except:
         loc_map[category]=[]
-        loc_map[category].append([lat,lon])
+        loc_map[category].append([str(lat),str(lon)])
 def addToMap(category,node):
     global ref_map
     props={}
@@ -67,7 +67,6 @@ def handleRelation(node):
     tags=[]
     @xml_handle_element("tag")
     def handleTag(node):
-        # global tags
         tags.append(node)
     @xml_handle_element("member")
     def handleMember(node):
@@ -75,19 +74,18 @@ def handleRelation(node):
     for item in node.iter_from(handleTag,handleMember):pass
     rule=checkRules(node,tags)
     if(rule!=None):
-        # shape = shapely.polygonize(multipoly)
-        # print(shape)
-        # print("---")
-        # for poly in multipoly {
-        #     for coordinate in poly {
-        #         print(f"{coordinate[0]}, {coordinate[1]}")
-        #     }
-        #     print()
-        # }
-        pass
+        linestrings=[]
+        for line in multipoly:
+            linestrings.append(shapely.LineString(line))
+        shape=shapely.polygonize(linestrings)
+        try:
+            centroid=shape.geoms[0].exterior.centroid
+            addLocation(rule["out"],centroid.y,centroid.x)
+        except:
+            # print(f"Failed to get data for {rule["out"]}")
+            pass
 if(__name__=="__main__"):
     with open(file_path,"rb")as f:
         for item in Parser(f).iter_from(handleNode,handleWay,handleRelation):pass
-    # with open("out.json", "w") as f {
-    #     f.write(json.dumps(ref_map))
-    # }
+    with open("locations.json","w")as f:
+        f.write(json.dumps(loc_map))

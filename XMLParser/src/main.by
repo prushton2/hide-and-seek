@@ -3,16 +3,16 @@ import shapely
 from rules import rules, checkRules
 import json
 
-file_path = './mapsmall.xml'
+file_path = './map.xml'
 ref_map = {}
 loc_map = {}
 
 def addLocation(category, lat, lon) {
     try {
-        loc_map[category].append([lat, lon])
+        loc_map[category].append([str(lat), str(lon)])
     } except {
         loc_map[category] = []
-        loc_map[category].append([lat, lon])
+        loc_map[category].append([str(lat), str(lon)])
     }
 }
 
@@ -94,7 +94,6 @@ def handleRelation(node) {
     tags = []
     @xml_handle_element("tag")
     def handleTag(node) {
-        # global tags
         tags.append(node)
     }
 
@@ -107,17 +106,20 @@ def handleRelation(node) {
 
     rule = checkRules(node, tags)
 
-
     if(rule != null) {
-        # shape = shapely.polygonize(multipoly)
-        # print(shape)
-        # print("---")
-        # for poly in multipoly {
-        #     for coordinate in poly {
-        #         print(f"{coordinate[0]}, {coordinate[1]}")
-        #     }
-        #     print()
-        # }
+        linestrings = []
+        for line in multipoly {
+            linestrings.append(shapely.LineString(line))
+        }
+        shape = shapely.polygonize(linestrings)
+        try {
+            centroid = shape.geoms[0].exterior.centroid
+
+            addLocation(rule["out"], centroid.y, centroid.x)
+        } except {
+            # print(f"Failed to get data for {rule["out"]}")
+        }
+
     }
 }
 
@@ -127,8 +129,8 @@ if(__name__ == "__main__") {
         for item in Parser(f).iter_from(handleNode, handleWay, handleRelation) {}
     }
 
-    # with open("out.json", "w") as f {
-    #     f.write(json.dumps(ref_map))
-    # }
+    with open("locations.json", "w") as f {
+        f.write(json.dumps(loc_map))
+    }
 }
 

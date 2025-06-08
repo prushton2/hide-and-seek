@@ -3,7 +3,7 @@ import { useEffect, useState, type JSX } from 'react'
 import Map from './components/map.tsx'
 import { Questions } from './lib/questions.tsx'
 import { update } from "./lib/API.tsx"
-import type { Shapes, Vector2 } from './lib/interface.ts'
+import type { Shapes, Circle, Vector2 } from './lib/interface.ts'
 
 function Seeker() {
   const [shapes, setShapes] = useState<Shapes>();

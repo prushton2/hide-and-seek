@@ -53,7 +53,12 @@ rules=[
 "tags":[
 ["leisure","park"]
 ],
-"out":"parks"
+"out":"park"
+},{
+"tags":[
+["amenity","library"]
+],
+"out":"library"
 }
 ]
 def checkRules(node,children=[]):

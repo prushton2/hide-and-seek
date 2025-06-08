@@ -116,9 +116,7 @@ def handleRelation(node) {
             centroid = shape.geoms[0].exterior.centroid
 
             addLocation(rule["out"], centroid.y, centroid.x)
-        } except {
-            # print(f"Failed to get data for {rule["out"]}")
-        }
+        } except {}
 
     }
 }

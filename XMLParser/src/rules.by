@@ -55,6 +55,16 @@ rules = [
             ["leisure", "park"]
         ],
         "out": "park"
+    },{
+        "tags": [
+            ["amenity", "library"]
+        ],
+        "out": "library"
+    },{
+        "tags": [
+            ["amenity", "cinema"]
+        ],
+        "out": "theater"
     }
 ]
 

@@ -140,6 +140,18 @@ const questionsMap: { [key: string]: Question } = {
         icon: "",
         replaceString: ["hospital"]
     },
+    "matching-museum": {
+        name: "Museum",
+        id: "matching-museum",
+        icon: "",
+        replaceString: ["museum"]
+    },
+    "matching-library": {
+        name: "Library",
+        id: "matching-library",
+        icon: "",
+        replaceString: ["library"]
+    },
 
     // Measure
 
@@ -166,6 +178,18 @@ const questionsMap: { [key: string]: Question } = {
         id: "measure-airport",
         icon: "",
         replaceString: ["airport"]
+    },
+    "measure-museum": {
+        name: "Museum",
+        id: "measure-museum",
+        icon: "",
+        replaceString: ["museum"]
+    },
+    "measure-library": {
+        name: "Library",
+        id: "measure-library",
+        icon: "",
+        replaceString: ["library"]
     },
     
     // Thermometer

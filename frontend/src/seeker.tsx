@@ -1,14 +1,15 @@
 import './seeker.css'
-import { useEffect, useState, type JSX } from 'react'
+import { useEffect, useState, type JSX  } from 'react'
 import Map from './components/map.tsx'
 import { Questions } from './lib/questions.tsx'
 import { update } from "./lib/API.tsx"
-import type { Shapes, Circle, Vector2 } from './lib/interface.ts'
+import type { Shapes, Vector2 } from './lib/interface.ts'
 
 function Seeker() {
   const [shapes, setShapes] = useState<Shapes>();
   const [seeker, setSeeker] = useState<number[]>([0,0]);
   const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
+  // const [layers, setLayers] = useState<{}>([])
   const [bbox, setBbox] = useState<Vector2[]>([])
 
   let center: number[] = [42.36041830331139, -71.0580009624248]
@@ -37,14 +38,14 @@ function Seeker() {
   return (
     <div className="container">
       <Map
-        key={""}
+        key={""} markers={[]}
         center={center} zoom={zoom}
         shapes={shapes} bbox={bbox}
         hider={[0,0]} seeker={seeker}
         update={(c, z) => {center = c; zoom = z}}
       />
       
-      <Questions key={"q"} askedQuestions={askedQuestions} callback={(question) => {updateQuestions()}}/>
+      <Questions key={"q"} askedQuestions={askedQuestions} callback={() => {updateQuestions()}}/>
     </div>
   )
 }

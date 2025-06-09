@@ -10,7 +10,7 @@ import type { Polygon, Shapes, Circle, Vector2 } from "../lib/interface";
 import hidericon from "../assets/H.png"
 import seekericon from "../assets/S.png"
 
-function Map({center, zoom, shapes, hider, seeker, bbox, update}: {center: number[], zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], bbox: Vector2[], update: (center: number[], zoom: number) => void}) {
+function Map({markers, center, zoom, shapes, hider, seeker, bbox, update}: {markers: {center: [number, number], radius: number, color: string}[], center: number[], zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], bbox: Vector2[], update: (center: number[], zoom: number) => void}) {
   const shaded = { 
     color: "blue",
     stroke: false,
@@ -119,6 +119,12 @@ function Map({center, zoom, shapes, hider, seeker, bbox, update}: {center: numbe
       <StateComponent />
       <Marker icon={hiderIcon} position={hider as any} />
       <Marker icon={seekerIcon} position={seeker as any} />
+
+      {markers == null ? <></> : markers.map((e, i) => {
+        return <CircleMarker center={e.center} radius={e.radius} pathOptions={{color: e.color}}/>
+      })
+
+      }
 
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
 

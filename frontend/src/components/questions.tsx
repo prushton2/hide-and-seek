@@ -1,5 +1,5 @@
 import { useState, type JSX } from "react";
-import { ask } from "./API";
+import { ask } from "../lib/API";
 
 export function Questions({askedQuestions, callback}: {askedQuestions: string[], callback: (question: string) => void}) {
     const [state, setState] = useState<string>("showCategories"); // state (showCategories, showQuestions, showQuestion)
@@ -59,7 +59,7 @@ export function Questions({askedQuestions, callback}: {askedQuestions: string[],
             <br />
             <br />
             <br />
-            {askedQuestions.indexOf(questionCategories[category].desc) >= 1 ?
+            {askedQuestions.indexOf(question) == -1 ?
                 <button onClick={async() => { await ask(question); callback(question); setState("showCategories"); setQuestion("") }}>Ask</button>
                 : <label>Question Asked</label>
             }
@@ -87,32 +87,38 @@ export interface Question {
 export interface Category {
     name: string
     desc: string
+    card: string
 }
 
-const questionCategories: { [key: string]: Category } = {
+export const questionCategories: { [key: string]: Category } = {
     "matching": {
         name: "Matching",
-        desc: "Is your nearest __ the same as mine?"
+        desc: "Is your nearest __ the same as mine?",
+        card: "Draw 3 Pick 1"
     },
     "measure": {
         name: "Measuring",
-        desc: "Are you closer or farther from your nearest __ than me?"
+        desc: "Are you closer or farther from your nearest __ than me?",
+        card: "Draw 3 Pick 1"
     },
     // "thermometer": {
     //     name: "Thermometer",
-    //     desc: "Ive traveled __, am I closer or farther to you?"
+    //     desc: "Ive traveled __, am I closer or farther to you?",
+    //     card: "Draw 2 Pick 1"
     // },
-    "tentacles": {
-        name: "Tentacles",
-        desc: "Out of all the __ within __ of me, which one are you closest to?"
-    },
     "radar": {
         name: "Radar",
-        desc: "Are you within __ of me?"
+        desc: "Are you within __ of me?",
+        card: "Draw 2 Pick 1"
+    },
+    "tentacles": {
+        name: "Tentacles",
+        desc: "Out of all the __ within __ of me, which one are you closest to?",
+        card: "Draw 4 Pick 2"
     }
 }
 
-const questionsMap: { [key: string]: Question } = {
+export const questionsMap: { [key: string]: Question } = {
 
     // Matching
     

@@ -3,10 +3,12 @@ import { useEffect, useState } from 'react'
 import Map from './components/map.tsx'
 import { update } from "./lib/API.tsx"
 import type { Shapes, Vector2 } from './lib/interface.ts'
+import AskedQuestions from './components/AskedQuestions.tsx'
 
 
 function Hider() {
   const [shapes, setShapes] = useState<Shapes>();
+  const [askedQuestions, setAskedQuestions] = useState<string[]>([]);
   const [hider, setHider] = useState<number[]>([0,0]);
   const [seeker, setSeeker] = useState<number[]>([0,0]);
   const [bbox, setBbox] = useState<Vector2[]>([])
@@ -22,6 +24,8 @@ function Hider() {
     }
 
     setShapes(response.shapes);
+
+    setAskedQuestions(response.askedQuestions)
 
     try {
       setSeeker([response.seekerpos.X, response.seekerpos.Y])
@@ -40,14 +44,17 @@ function Hider() {
   return (
     <div className="container">
       <Map
-        key={""}
+        key={""} markers={[]}
         center={center} zoom={zoom}
         shapes={shapes} bbox={bbox}
         hider={hider} seeker={seeker}
         update={(c, z) => {center = c; zoom = z}}
       />
+      <AskedQuestions askedQuestions={askedQuestions} />
     </div>
   )
 }
+
+
 
 export default Hider

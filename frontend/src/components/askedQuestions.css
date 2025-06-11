@@ -1,0 +1,37 @@
+.label {
+  color: white;
+  margin: 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 16px 2px;
+  margin-bottom: 10%;
+}
+
+.leftColumn {
+  text-align: right;
+}
+
+.midColumn {
+    text-align: left;
+}
+
+.div {
+  background-color: #1a1a1a;
+  margin: 3%;
+  /* border: 1px solid blue; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

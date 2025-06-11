@@ -3,7 +3,7 @@ import { useEffect, useState, type JSX  } from 'react'
 import Map from './components/map.tsx'
 import { Questions } from './components/questions.tsx'
 import { update } from "./lib/API.tsx"
-import { type UpdateResponse, type Shapes, type Vector2, } from './lib/interface.ts'
+import { type UpdateResponse } from './lib/interface.ts'
 
 function Seeker() {
   const [seeker, setSeeker] = useState<number[]>([0,0]);

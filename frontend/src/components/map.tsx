@@ -61,7 +61,7 @@ function Map({markers, center, zoom, shapes, hider, seeker, bbox, update}: {mark
     let circles: Feature[] = []
 
     for(let i = 0; i < circle.circles.length; i++) {
-      circles.push(turf.circle([circle.circles[i].center.Y, circle.circles[i].center.X], circle.circles[i].radius, {units: "meters", steps: 128}))
+      circles.push(turf.circle([circle.circles[i].center.Y, circle.circles[i].center.X], circle.circles[i].radius, {units: "meters", steps: 32}))
     }
 
     if(circle.shaded) {

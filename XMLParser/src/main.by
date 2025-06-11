@@ -9,10 +9,10 @@ loc_map = {}
 
 def addLocation(category, lat, lon) {
     try {
-        loc_map[category].append([str(lat), str(lon)])
+        loc_map[category].append([float(lat), float(lon)])
     } except {
         loc_map[category] = []
-        loc_map[category].append([str(lat), str(lon)])
+        loc_map[category].append([float(lat), float(lon)])
     }
 }
 

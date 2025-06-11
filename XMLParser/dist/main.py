@@ -7,10 +7,10 @@ ref_map={}
 loc_map={}
 def addLocation(category,lat,lon):
     try:
-        loc_map[category].append([str(lat),str(lon)])
+        loc_map[category].append([float(lat),float(lon)])
     except:
         loc_map[category]=[]
-        loc_map[category].append([str(lat),str(lon)])
+        loc_map[category].append([float(lat),float(lon)])
 def addToMap(category,node):
     global ref_map
     props={}
@@ -81,9 +81,7 @@ def handleRelation(node):
         try:
             centroid=shape.geoms[0].exterior.centroid
             addLocation(rule["out"],centroid.y,centroid.x)
-        except:
-            # print(f"Failed to get data for {rule["out"]}")
-            pass
+        except:pass
 if(__name__=="__main__"):
     with open(file_path,"rb")as f:
         for item in Parser(f).iter_from(handleNode,handleWay,handleRelation):pass

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { UpdateResponse, JoinResponse, PlayerInfo } from '../lib/interface'; 
+import type { UpdateResponse, JoinResponse, PlayerInfo, Vector2 } from '../lib/interface'; 
 
 let backend_url = "http://localhost:3333"
 
@@ -36,4 +36,10 @@ export async function update(): Promise<UpdateResponse> {
     }))
 
     return (await response.data) as UpdateResponse;
+}
+
+export async function getLocations(): Promise<Map<string, Vector2[]>> {
+    let response = await axios.get(`${backend_url}/getLocations`)
+
+    return (await response.data) as Map<string, Vector2[]>;
 }

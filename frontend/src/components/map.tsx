@@ -122,9 +122,7 @@ function Map({markers, center, zoom, shapes, hider, seeker, bbox, update}: {mark
 
       {markers == null ? <></> : markers.map((e, i) => {
         return <CircleMarker center={e.center} radius={e.radius} pathOptions={{color: e.color}}/>
-      })
-
-      }
+      })}
 
       <Pane name="excludedArea" style={{opacity: "0.25"}}>
 

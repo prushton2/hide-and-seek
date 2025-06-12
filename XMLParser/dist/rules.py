@@ -14,12 +14,6 @@ rules=[
 "out":"light_rail"
 },{
 "tags":[
-["railway","station"],
-["train","yes"]
-],
-"out":"cr"
-},{
-"tags":[
 ["healthcare","hospital"]
 ],
 "out":"hospital"

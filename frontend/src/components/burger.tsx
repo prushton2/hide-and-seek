@@ -70,8 +70,6 @@ function Menu({options, onChange}: {options: {name: string, type: string, initia
             }
 
         }
-
-
         return jsx;
     }
 

@@ -46,5 +46,27 @@ func GetLocation(name string) ([]types.Vector2, error) {
 	}
 
 	return arr, nil
+}
 
+func GetAllLocations() (map[string][]types.Vector2, error) {
+	file, err := os.Open("globals/locations.json")
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+	bytes, _ := io.ReadAll(file)
+
+	var LocationsF64 map[string][][]float64
+	json.Unmarshal(bytes, &LocationsF64)
+
+	var Locations map[string][]types.Vector2 = make(map[string][]types.Vector2)
+
+	for i := range LocationsF64 {
+		Locations[i] = []types.Vector2{}
+		for j := range LocationsF64[i] {
+			Locations[i] = append(Locations[i], types.Vector2{X: LocationsF64[i][j][0], Y: LocationsF64[i][j][1]})
+		}
+	}
+	return Locations, nil
 }

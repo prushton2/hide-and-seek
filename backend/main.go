@@ -251,8 +251,6 @@ func join(w http.ResponseWriter, r *http.Request) {
 	Games[parsedBody.Code] = game
 	GamesMutex.Unlock()
 
-	fmt.Printf("%s: %v\n", id, player)
-
 	io.WriteString(w, fmt.Sprintf("{\"key\": \"%s\"}", id))
 }
 
@@ -300,6 +298,42 @@ func playerInfo(w http.ResponseWriter, r *http.Request) {
 	io.Writer.Write(w, bytes)
 }
 
+func getLocations(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Request-Method", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+
+	m, err := url.ParseQuery(r.URL.RawQuery)
+	if err != nil {
+		http.Error(w, "Error reading querystring (is there a querystring?)", http.StatusBadRequest)
+		io.WriteString(w, "{}")
+		return
+	}
+
+	if m.Get("location") == "" {
+		response, err := globals.GetAllLocations()
+		if err != nil {
+			http.Error(w, "Error getting all locations", http.StatusInternalServerError)
+			io.WriteString(w, "{}")
+			return
+		}
+
+		bytes, _ := json.Marshal(response)
+		io.Writer.Write(w, bytes)
+		return
+	}
+
+	response, err := globals.GetLocation(m.Get("location"))
+	if err != nil {
+		http.Error(w, "Ensure a correct location name", http.StatusBadRequest)
+		io.WriteString(w, "{}")
+		return
+	}
+
+	bytes, _ := json.Marshal(response)
+	io.Writer.Write(w, bytes)
+}
+
 func main() {
 	Players["0bac5ee8-d63f-484b-88ef-1d5751036a73"] = types.Player{
 		Team: "hiders",
@@ -332,6 +366,7 @@ func main() {
 	http.HandleFunc("/update", update)
 	http.HandleFunc("/join", join)
 	http.HandleFunc("/playerInfo", playerInfo)
+	http.HandleFunc("/getLocations", getLocations)
 
 	fmt.Println("Running Server")
 	http.ListenAndServe(":3333", nil)

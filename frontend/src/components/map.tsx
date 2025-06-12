@@ -10,7 +10,7 @@ import type { Polygon, Shapes, Circle, Vector2 } from "../lib/interface";
 import hidericon from "../assets/H.png"
 import seekericon from "../assets/S.png"
 
-function Map({markers, center, zoom, shapes, hider, seeker, bbox, update}: {markers: {center: [number, number], radius: number, color: string}[], center: number[], zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], bbox: Vector2[], update: (center: number[], zoom: number) => void}) {
+function Map({markers, center, circleRes, zoom, shapes, hider, seeker, bbox, update}: {markers: {center: [number, number], radius: number, color: string}[], center: number[], circleRes: number, zoom: number, shapes: Shapes | undefined, hider: number[], seeker: number[], bbox: Vector2[], update: (center: number[], zoom: number) => void}) {
   const shaded = { 
     color: "blue",
     stroke: false,
@@ -61,7 +61,7 @@ function Map({markers, center, zoom, shapes, hider, seeker, bbox, update}: {mark
     let circles: Feature[] = []
 
     for(let i = 0; i < circle.circles.length; i++) {
-      circles.push(turf.circle([circle.circles[i].center.Y, circle.circles[i].center.X], circle.circles[i].radius, {units: "meters", steps: 32}))
+      circles.push(turf.circle([circle.circles[i].center.Y, circle.circles[i].center.X], circle.circles[i].radius, {units: "meters", steps: circleRes < 4 ? 4 : circleRes}))
     }
 
     if(circle.shaded) {
@@ -136,7 +136,7 @@ function Map({markers, center, zoom, shapes, hider, seeker, bbox, update}: {mark
         
       </Pane>
     </MapContainer>
-  );
+  )
 }
 
 export default Map;

@@ -63,19 +63,46 @@ Note: Beware of modifying this element as it can break the animations - you shou
     display: inline-block;
 }
 
+.bm-header {
+    /* display: inline-block; */
+    color: white;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+}
+
 .bm-switch {
     /* display: inline-block; */
     color: white;
     background-color:#242424;
     padding: 10px;
+    margin-top: 10px;
     border-radius: 8px;
+
+    text-align: right;
 }
 
 .bm-switch-label {
     /* display: flex; */
-    border: 1px solid red;
-    /* margin: auto; */
+    /* border: 1px solid red; */
+    margin-right: 10px;
     height: 100%
+}
+
+.bm-slider {
+    /* display: inline-block; */
+    color: white;
+    background-color:#242424;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+
+    text-align: right;
+}
+
+.bm-slider-label {
+    /* display: inline-block; */
+    color: white;
 }
 
 /* Styling of overlay */

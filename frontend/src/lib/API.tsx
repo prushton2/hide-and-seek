@@ -38,8 +38,8 @@ export async function update(): Promise<UpdateResponse> {
     return (await response.data) as UpdateResponse;
 }
 
-export async function getLocations(): Promise<Map<string, Vector2[]>> {
+export async function getLocations(): Promise<{[key: string]: Vector2[]}> {
     let response = await axios.get(`${backend_url}/getLocations`)
-
-    return (await response.data) as Map<string, Vector2[]>;
+    // console.log(await response.data)
+    return (await response.data) as {[key: string]: Vector2[]};
 }

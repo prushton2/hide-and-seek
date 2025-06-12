@@ -54,7 +54,7 @@ function Menu({options, onChange}: {options: {name: string, type: string, initia
                             {option.name}
                         </label><br />
                         <div className="slidecontainer">
-                            <input type="range" min="1" max="128" defaultValue={32} className="slider" onChange={(e) => {updateState(option.name, e.target.value)}} />
+                            <input type="range" min="1" max="128" defaultValue={option.initialValue} className="slider" onChange={(e) => {updateState(option.name, e.target.value)}} />
                         </div>
                         {state?.get(option.name)}
                     </div>)

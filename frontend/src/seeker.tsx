@@ -17,7 +17,6 @@ function Seeker() {
   // let settings: Map<string, any> = new Map();
   let center: number[] = [42.36041830331139, -71.0580009624248]
   let zoom: number = 13
-  console.log("rerender")
 
   async function updateQuestions() {
     let response = await update()
@@ -50,7 +49,7 @@ function Seeker() {
   function createMapOptions(locations: Map<string, Vector2[]> | undefined):  {name: string, type: string, initialValue: any}[] {
     let map: {name: string, type: string, initialValue: any}[] = [
       {name: "Settings", type: "header", initialValue: null},
-      {name: "Circle Resolution", type: "slider", initialValue: 32},
+      {name: "Circle Resolution", type: "slider", initialValue: 8},
       {name: "Location Markers", type: "header", initialValue: null},
     ]
 
@@ -74,7 +73,7 @@ function Seeker() {
       return markers;
     }
 
-    let colors = ["red", "orange", "yellow", "green", "blue", "violet", "grey", "white"];
+    let colors = ["blue", "green", "red", "orange", "yellow", "violet", "grey", "white"];
     let colorIndex = 0;
 
     for (const key of locations.keys()) {

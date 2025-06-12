@@ -4,20 +4,14 @@ import { questionCategories } from "./questions";
 function AskedQuestions({askedQuestions}: {askedQuestions: string[]}) {
     askedQuestions = askedQuestions.reverse();
 
-    function questionInfo(question: string) {
+    function questionInfo(question: string, index: number) {
         let category = question.split("-")[0]
-        let name = question.split("-").slice(1).join(" ")
+        let name = question.split("-").join(" ")
         
         return <tr key={question}>
-            <td className="leftColumn">
-                {category}           
-            </td>
-            <td className="midColumn">
-                {name}
-            </td>
-            <td>
-                {questionCategories[category].card}
-            </td>
+            <td>{index}</td>
+            <td>{name}</td>
+            <td>{questionCategories[category].card}</td>
         </tr>
     }
 
@@ -25,15 +19,18 @@ function AskedQuestions({askedQuestions}: {askedQuestions: string[]}) {
         <div className="div">
             <h1>Asked Questions</h1>
             <table className="table">
+            <thead>
                 <tr>
-                    <th>Category</th>
+                    <th>No</th>
                     <th>Question</th>
                     <th>Card Draws</th>
                 </tr>
-
-                {askedQuestions.map((e) => {
-                    return questionInfo(e)
+            </thead>
+            <tbody>
+                {askedQuestions.map((e, i) => {
+                    return questionInfo(e, askedQuestions.length-i)
                 })}
+            </tbody>
             </table>
         </div>
     )

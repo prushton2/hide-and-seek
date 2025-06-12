@@ -81,7 +81,7 @@ function Map({markers, center, circleRes, zoom, shapes, hider, seeker, bbox, upd
       let diff = turf.difference(turf.featureCollection([poly, cutpoly]))
 
       let coordinates = diff?.geometry.coordinates
-
+      
       if(coordinates != null) {
         poly = turf.polygon(coordinates as Position[][])
       }

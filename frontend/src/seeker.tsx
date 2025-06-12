@@ -33,7 +33,6 @@ function Seeker() {
     let locmap: Map<string, Vector2[]> = new Map()
 
     for( const key in locdata ) {
-      console.log(key)
       locmap.set(key, locdata[key])
     }
 

@@ -50,11 +50,6 @@ rules=[
 "out":"park"
 },{
 "tags":[
-["amenity","library"]
-],
-"out":"library"
-},{
-"tags":[
 ["amenity","cinema"]
 ],
 "out":"theater"

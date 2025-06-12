@@ -152,11 +152,11 @@ export const questionsMap: { [key: string]: Question } = {
         icon: "",
         replaceString: ["museum"]
     },
-    "matching-library": {
-        name: "Library",
-        id: "matching-library",
+    "matching-ferry": {
+        name: "Ferry",
+        id: "matching-ferry",
         icon: "",
-        replaceString: ["library"]
+        replaceString: ["ferry terminal"]
     },
 
     // Measure
@@ -191,11 +191,11 @@ export const questionsMap: { [key: string]: Question } = {
         icon: "",
         replaceString: ["museum"]
     },
-    "measure-library": {
-        name: "Library",
-        id: "measure-library",
+    "measure-ferry": {
+        name: "Ferry",
+        id: "measure-ferry",
         icon: "",
-        replaceString: ["library"]
+        replaceString: ["ferry terminal"]
     },
     
     // Thermometer

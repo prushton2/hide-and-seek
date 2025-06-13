@@ -4,9 +4,17 @@ import { useEffect, useState } from 'react'
 
 import LeafletMap from './components/map.tsx'
 import { Questions } from './components/questions.tsx'
-import { getLocations, update } from "./lib/API.tsx"
+import { getLocations, leave, update } from "./lib/API.tsx"
 import { type UpdateResponse, type Vector2 } from './lib/interface.ts'
 import Menu from './components/burger.tsx'
+
+async function leaveGame() {
+  if(confirm("Are you sure you would like to exit the game?")) {
+    console.log("confirmed")
+    await leave()
+    window.location.href = "/"
+  }
+}
 
 function Seeker() {
   const [seeker, setSeeker] = useState<number[]>([0,0]);
@@ -49,6 +57,7 @@ function Seeker() {
     let map: {name: string, type: string, initialValue: any}[] = [
       {name: "Settings", type: "header", initialValue: null},
       {name: "Circle Resolution", type: "slider", initialValue: 8},
+      {name: "Leave Game", type: "button", initialValue: leaveGame },
       {name: "Location Markers", type: "header", initialValue: null},
     ]
 

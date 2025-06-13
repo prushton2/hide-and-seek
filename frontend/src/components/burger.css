@@ -97,12 +97,25 @@ Note: Beware of modifying this element as it can break the animations - you shou
     margin-top: 10px;
     border-radius: 8px;
 
-    text-align: right;
+    text-align: center;
 }
 
 .bm-slider-label {
     /* display: inline-block; */
     color: white;
+}
+
+.bm-button {
+    /* display: inline-block; */
+    color: white;
+    background-color:#242424;
+    width: 100%;
+    padding: 10px;
+    margin: 0px; /* Overwrite inherited margin */
+    margin-top: 10px; 
+    border-radius: 8px;
+    
+    text-align: center;
 }
 
 /* Styling of overlay */

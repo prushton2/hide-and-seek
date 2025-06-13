@@ -28,6 +28,10 @@ type JoinRequest struct {
 	Code string `json:"code"`
 }
 
+type LeaveRequest struct {
+	Key string `json:"key"`
+}
+
 var GamesMutex sync.RWMutex = sync.RWMutex{}
 var Games map[string]types.Game = map[string]types.Game{}
 var PlayersMutex sync.RWMutex = sync.RWMutex{}
@@ -254,6 +258,72 @@ func join(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, fmt.Sprintf("{\"key\": \"%s\"}", id))
 }
 
+func leave(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Request-Method", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+
+	// read the body
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error reading request body (is this a post request?)", http.StatusBadRequest)
+		io.WriteString(w, "{}")
+		return
+	}
+
+	// parse the body
+	var parsedBody LeaveRequest
+	err = json.Unmarshal(body, &parsedBody)
+	if err != nil {
+		http.Error(w, "Body is not valid JSON", http.StatusBadRequest)
+		io.WriteString(w, "{}")
+		return
+	}
+	defer r.Body.Close()
+
+	// get the player
+	player, exists := Players[parsedBody.Key]
+
+	if !exists {
+		io.WriteString(w, "{\"status\": \"Player doesnt exist\"}")
+		return
+	}
+
+	// get game to get the player number
+	game, exists := Games[player.Code]
+
+	// create game if not exists
+	if exists {
+		if player.Team == "hiders" {
+			for i, e := range game.Hiders {
+				if e == parsedBody.Key {
+					game.Hiders = append(game.Hiders[:i], game.Hiders[i+1:]...)
+				}
+			}
+		} else if player.Team == "seekers" {
+			for i, e := range game.Seekers {
+				if e == parsedBody.Key {
+					game.Seekers = append(game.Seekers[:i], game.Seekers[i+1:]...)
+				}
+			}
+		}
+
+		GamesMutex.Lock()
+		if len(game.Seekers)+len(game.Hiders) >= 1 {
+			Games[player.Code] = game
+		} else {
+			delete(Games, game.Id)
+		}
+		GamesMutex.Unlock()
+	}
+
+	PlayersMutex.Lock()
+	delete(Players, parsedBody.Key)
+	PlayersMutex.Unlock()
+
+	io.WriteString(w, "{\"status\": \"deleted player and left game\"}")
+}
+
 func playerInfo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Request-Method", "*")
@@ -365,6 +435,7 @@ func main() {
 	http.HandleFunc("/ask", ask)
 	http.HandleFunc("/update", update)
 	http.HandleFunc("/join", join)
+	http.HandleFunc("/leave", leave)
 	http.HandleFunc("/playerInfo", playerInfo)
 	http.HandleFunc("/getLocations", getLocations)
 

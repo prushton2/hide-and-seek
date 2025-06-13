@@ -49,7 +49,6 @@ input:checked + .switch-slider:before {
   transform: translateX(26px);
 }
 
-
 /* SLIDER */
 
 .slidecontainer {
@@ -63,7 +62,6 @@ input:checked + .switch-slider:before {
   border-radius: 0%;
   background-color: #343434;
 }
-
 
 .slider::-webkit-slider-thumb {
   height: 30px;

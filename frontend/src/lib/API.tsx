@@ -43,3 +43,11 @@ export async function getLocations(): Promise<{[key: string]: Vector2[]}> {
     // console.log(await response.data)
     return (await response.data) as {[key: string]: Vector2[]};
 }
+
+export async function leave(): Promise<null> {
+    let response = await axios.post(`${backend_url}/leave`, JSON.stringify({
+        "key": localStorage.getItem("key")
+    }))
+
+    return null
+}

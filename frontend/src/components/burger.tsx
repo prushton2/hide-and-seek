@@ -32,7 +32,7 @@ function Menu({options, onChange}: {options: {name: string, type: string, initia
             switch(option.type) {
                 case "switch":
                     if (typeof option.initialValue !== "boolean") {
-                        console.warn(`Expected boolean for switch option "${option.name}", got ${typeof option.initialValue}`);
+                        console.warn(`Expected boolean in initialValue for switch option "${option.name}", got ${typeof option.initialValue}`);
                         continue;
                     }
 
@@ -49,6 +49,11 @@ function Menu({options, onChange}: {options: {name: string, type: string, initia
                     )
                     break;
                 case "slider":
+                    if (typeof option.initialValue !== "number") {
+                        console.warn(`Expected number in initialValue for slider option "${option.name}", got ${typeof option.initialValue}`);
+                        continue;
+                    }
+
                     jsx.push(<div className='bm-slider' key={option.name}>
                         <label className='bm-slider-label'>
                             {option.name}
@@ -62,6 +67,17 @@ function Menu({options, onChange}: {options: {name: string, type: string, initia
                 case "header":
                     jsx.push(
                         <label className="bm-header" key={option.name}>{option.name}</label>
+                    )
+                    break;
+                
+                case "button":
+                    if (typeof option.initialValue !== "function") {
+                        console.warn(`Expected function in initialValue for button option "${option.name}", got ${typeof option.initialValue}`);
+                        continue;
+                    }
+
+                    jsx.push(
+                        <button className="bm-button" key={option.name} onClick={option.initialValue}>{option.name}</button>
                     )
 
                     break;

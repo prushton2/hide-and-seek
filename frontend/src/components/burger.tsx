@@ -56,20 +56,19 @@ function Menu({options, onChange}: {options: {name: string, type: string, initia
 
                     jsx.push(<div className='bm-slider' key={option.name}>
                         <label className='bm-slider-label'>
-                            {option.name}
+                            {option.name} ({state?.get(option.name)})
                         </label><br />
                         <div className="slidecontainer">
                             <input type="range" min="1" max="128" defaultValue={option.initialValue} className="slider" onChange={(e) => {updateState(option.name, e.target.value)}} />
                         </div>
-                        {state?.get(option.name)}
                     </div>)
                     break;
                 case "header":
                     jsx.push(
                         <label className="bm-header" key={option.name}>{option.name}</label>
                     )
+                    
                     break;
-                
                 case "button":
                     if (typeof option.initialValue !== "function") {
                         console.warn(`Expected function in initialValue for button option "${option.name}", got ${typeof option.initialValue}`);
@@ -84,7 +83,6 @@ function Menu({options, onChange}: {options: {name: string, type: string, initia
                 default:
                     console.warn(`Unknown option type: ${option.type} for key: ${option.name}`);
             }
-
         }
         return jsx;
     }

@@ -41,7 +41,7 @@ function Game({hider=false, seeker=false}: {hider?: boolean, seeker?: boolean}):
 
     return <div className="container">
         <Menu options={createMapOptions(locations)} onChange={(s) => setMenuSettings(s)}/>
-        <LeafletMap 
+        <LeafletMap
             key={""} markers={createMarkers(locations, menuSettings)} circleRes={menuSettings.get("Circle Resolution") as number}
             center={center} zoom={zoom}
             shapes={gameInfo.shapes} bbox={gameInfo.bbox}
@@ -57,7 +57,6 @@ export default Game;
 
 async function leaveGame() {
   if(confirm("Are you sure you would like to exit the game?")) {
-    console.log("confirmed")
     await leave()
     window.location.href = "/"
   }
@@ -73,13 +72,13 @@ function createMapOptions(locations: Map<string, Vector2[]> | undefined):  {name
 
     if(locations != undefined) {
         for (const key of locations.keys()) {
-        map.push({name: key, type: "switch", initialValue: false})
+            map.push({name: key, type: "switch", initialValue: false})
         }
     }
 
     map.push({name: "", type: "header", initialValue: null})
-    map.push({name: "", type: "header", initialValue: null})
-    map.push({name: "", type: "header", initialValue: null})
+    map.push({name: " ", type: "header", initialValue: null})
+    map.push({name: "  ", type: "header", initialValue: null})
     return map;
 }
 
@@ -95,7 +94,7 @@ function createMarkers(locations: Map<string, Vector2[]>, settings: Map<string, 
 
     for (const key of locations.keys()) {
         if(settings.get(key) != true) {
-        continue
+            continue
         }
 
         const vectors = locations.get(key);

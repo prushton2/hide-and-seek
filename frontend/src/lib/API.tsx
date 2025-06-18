@@ -19,9 +19,8 @@ export async function playerInfo(key: string): Promise<PlayerInfo> {
 }
 
 export async function ask(question: string) {
-    let res;
     try {
-        res = await axios.post(`${backend_url}/ask?q=${question}`, JSON.stringify({
+        await axios.post(`${backend_url}/ask?q=${question}`, JSON.stringify({
             key: localStorage.getItem("key")
         }));
     } catch (e) {
@@ -45,7 +44,7 @@ export async function getLocations(): Promise<{[key: string]: Vector2[]}> {
 }
 
 export async function leave(): Promise<null> {
-    let response = await axios.post(`${backend_url}/leave`, JSON.stringify({
+    await axios.post(`${backend_url}/leave`, JSON.stringify({
         "key": localStorage.getItem("key")
     }))
 

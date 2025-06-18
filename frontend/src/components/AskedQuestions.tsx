@@ -1,5 +1,5 @@
 import "./askedQuestions.css"
-import { questionCategories } from "./questions";
+import { QuestionCategories } from "./questions";
 
 function AskedQuestions({askedQuestions}: {askedQuestions: string[]}) {
     askedQuestions = askedQuestions.reverse();
@@ -11,7 +11,7 @@ function AskedQuestions({askedQuestions}: {askedQuestions: string[]}) {
         return <tr key={question}>
             <td>{index}</td>
             <td>{name}</td>
-            <td>{questionCategories[category].card}</td>
+            <td>{QuestionCategories[category].card}</td>
         </tr>
     }
 

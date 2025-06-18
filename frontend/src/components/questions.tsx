@@ -9,7 +9,7 @@ export function Questions({askedQuestions, callback}: {askedQuestions: string[],
     function renderCategories() {
         let arr: JSX.Element[] = []
         
-        Object.entries(questionCategories).forEach((category: [string, Category]) => {
+        Object.entries(QuestionCategories).forEach((category: [string, Category]) => {
             arr.push(
                 <button key={category[0]}
                     className="questionCategory" 
@@ -23,7 +23,7 @@ export function Questions({askedQuestions, callback}: {askedQuestions: string[],
 
     function renderQuestions() {
         
-        let arr: JSX.Element[] = Object.entries(questionsMap)
+        let arr: JSX.Element[] = Object.entries(QuestionsMap)
             .filter((e: [string, Question]) => e[0].startsWith(category))
             .map((q: [string, Question]) => {
                 return <button key={q[1].id} className="question" style={{backgroundColor: askedQuestions.indexOf(q[0]) >= 0 ? "#545454" : "#141414" }} onClick={(e) => {setState("showQuestion"); setQuestion(q[0])}}>
@@ -38,7 +38,7 @@ export function Questions({askedQuestions, callback}: {askedQuestions: string[],
         );
             
         return <>
-            {questionCategories[category].desc}
+            {QuestionCategories[category].desc}
             <div className="questionContainer">    
                 {arr}
             </div>
@@ -46,15 +46,15 @@ export function Questions({askedQuestions, callback}: {askedQuestions: string[],
     }
 
     function renderQuestion() {
-        let description = questionCategories[category].desc
+        let description = QuestionCategories[category].desc
 
-        questionsMap[question].replaceString.forEach((e) => {
+        QuestionsMap[question].replaceString.forEach((e) => {
             description = description.replace("__", e)
         })
 
         return <div>
             <button onClick={(e) => { setState("showQuestions"); setQuestion("") }}>Back</button>
-            <h2>{questionCategories[category].name}: {questionsMap[question].name}</h2>
+            <h2>{QuestionCategories[category].name}: {QuestionsMap[question].name}</h2>
             {description}
             <br />
             <br />
@@ -90,7 +90,7 @@ export interface Category {
     card: string
 }
 
-export const questionCategories: { [key: string]: Category } = {
+export const QuestionCategories: { [key: string]: Category } = {
     "matching": {
         name: "Matching",
         desc: "Is your nearest __ the same as mine?",
@@ -118,7 +118,7 @@ export const questionCategories: { [key: string]: Category } = {
     }
 }
 
-export const questionsMap: { [key: string]: Question } = {
+export const QuestionsMap: { [key: string]: Question } = {
 
     // Matching
     

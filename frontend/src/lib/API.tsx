@@ -29,10 +29,10 @@ export async function ask(question: string) {
     }
 }
 
-export async function update(): Promise<UpdateResponse> {
+export async function update(geoloc: Vector2): Promise<UpdateResponse> {
     let response = await axios.post(`${backend_url}/update`, JSON.stringify({
         "key": localStorage.getItem("key"),
-        "pos": {"X": 0, "Y": 0}
+        "pos": geoloc
     }))
 
     return (await response.data) as UpdateResponse;

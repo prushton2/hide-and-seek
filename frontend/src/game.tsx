@@ -2,7 +2,7 @@ import "./game.css"
 import { useEffect, useState, type JSX } from "react";
 import LeafletMap from './components/map.tsx'
 import type { UpdateResponse, Vector2 } from "./lib/interface";
-import { getLocations, leave, update } from "./API.tsx";
+import { getLocations, leave, update } from "./lib/API.tsx";
 import Menu from "./components/burger.tsx";
 import { Questions } from "./components/questions.tsx";
 import AskedQuestions from "./components/AskedQuestions.tsx";
@@ -20,7 +20,8 @@ function Game({hider=false, seeker=false}: {hider?: boolean, seeker?: boolean}):
     let zoom: number = 13
 
     async function updateGameInfo() {
-        setGameInfo(await update())    
+        let geoloc = await getGeoLocation()
+        setGameInfo(await update(geoloc))
     }
 
     async function updateLocations() {
@@ -76,8 +77,8 @@ function createMapOptions(locations: Map<string, Vector2[]> | undefined):  {name
         }
     }
 
-    map.push({name: "", type: "header", initialValue: null})
-    map.push({name: " ", type: "header", initialValue: null})
+    map.push({name: "",   type: "header", initialValue: null})
+    map.push({name: " ",  type: "header", initialValue: null})
     map.push({name: "  ", type: "header", initialValue: null})
     return map;
 }
@@ -112,4 +113,19 @@ function createMarkers(locations: Map<string, Vector2[]>, settings: Map<string, 
     }
 
     return markers;
+}
+
+async function getGeoLocation(): Promise<Vector2> {
+    if(!navigator.geolocation) {
+        alert("This browser doesnt support geolocation")
+        return {X:0,Y:0}
+    }
+
+    return new Promise((res, rej) => {
+        navigator.geolocation.getCurrentPosition((pos) => {
+            res({X: pos.coords.latitude, Y: pos.coords.longitude})
+        }, (err) => {
+            rej({X:0,Y:0})
+        }) 
+    })
 }

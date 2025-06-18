@@ -24,12 +24,8 @@ function App() {
 
     try {
       let player = await playerInfo(localStorage.getItem("key") as string)
-
-      console.log(player)
       
-      setRejoinButton(<button onClick={() => {window.location.href = `/${player.team}`}}>
-        Rejoin Game
-      </button>)
+      setRejoinButton(<button onClick={() => {window.location.href = `/${player.team}`}}>Rejoin Game</button>)
 
     } catch (e) {
       return

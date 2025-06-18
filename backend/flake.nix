@@ -1,13 +1,17 @@
 {
+  description = "A very basic flake";
+
   inputs = {
-    nixpkgs.url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/25.05.tar.gz"
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
-  outputs = { self, nixpkgs }: {
-    let
-      pkgs = import nixpkgs.x86_64-linux;
-    in {
-      packages.x86_64-linux.go = pkgs.go;
-      packages.x86_64-linux.gcc = pkgs.gcc;
-    }
+
+  outputs = { self, nixpkgs }: 
+  let
+    pkgs = nixpkgs.legacyPackages.x86_64-linux;
+  in
+  {
+    devShells.x86_64-linux.default = pkgs.mkShell {
+      buildInputs = [ pkgs.go pkgs.gcc ];
+    };
   };
 }

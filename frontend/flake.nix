@@ -10,16 +10,16 @@
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
     in
     {
-      packages.x86_64-linux.hide-and-seek = pkgs.buildGoModule {
+      packages.x86_64-linux.hide-and-seek = pkgs.buildNpmModule {
         pname = "hide-and-seek";
         version = "0.1.0";
         src = ./.;
-        vendorHash = "sha256-mGKxBRU5TPgdmiSx0DHEd0Ys8gsVD/YdBfbDdSVpC3U=";
+        vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
         doCheck = false;
       };
 
       devShells.x86_64-linux.default = pkgs.mkShell {
-        name = "hide-and-seek-backend";
+        name = "hide-and-seek-frontend";
         packages = with pkgs; [
           go
           gcc

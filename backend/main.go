@@ -77,7 +77,10 @@ func update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if game exists
+	GamesMutex.Lock()
 	game, exists := Games[player.Code]
+	GamesMutex.Unlock()
+
 	if !exists {
 		http.Error(w, "Game doesnt exist", http.StatusTeapot)
 		io.WriteString(w, "{}")
@@ -153,7 +156,9 @@ func ask(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
+	PlayersMutex.Lock()
 	player, exists := Players[parsedBody.Key]
+	PlayersMutex.Unlock()
 
 	if !exists {
 		http.Error(w, "Invalid Key", http.StatusForbidden)
@@ -204,14 +209,19 @@ func join(w http.ResponseWriter, r *http.Request) {
 
 	// create a uuid that doesnt exist yet
 	id := uuid.New().String()
+
+	PlayersMutex.Lock()
 	_, exists := Players[id]
 	for exists {
 		id = uuid.New().String()
 		_, exists = Players[id]
 	}
+	PlayersMutex.Unlock()
 
 	// get game to get the player number
+	GamesMutex.Lock()
 	game, exists := Games[parsedBody.Code]
+	GamesMutex.Unlock()
 	No := 0
 
 	// create game if not exists
@@ -282,7 +292,9 @@ func leave(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	// get the player
+	PlayersMutex.Lock()
 	player, exists := Players[parsedBody.Key]
+	PlayersMutex.Unlock()
 
 	if !exists {
 		io.WriteString(w, "{\"status\": \"Player doesnt exist\"}")
@@ -290,7 +302,9 @@ func leave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get game to get the player number
+	GamesMutex.Lock()
 	game, exists := Games[player.Code]
+	GamesMutex.Unlock()
 
 	// create game if not exists
 	if exists {
@@ -347,7 +361,9 @@ func playerInfo(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
+	PlayersMutex.Lock()
 	player, exists := Players[parsedBody.Key]
+	PlayersMutex.Unlock()
 
 	if !exists {
 		http.Error(w, "Player doesnt exist", http.StatusNotFound)
@@ -355,7 +371,9 @@ func playerInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	GamesMutex.Lock()
 	_, exists = Games[player.Code]
+	GamesMutex.Unlock()
 
 	if !exists {
 		http.Error(w, "Game doesnt exist", http.StatusNotFound)

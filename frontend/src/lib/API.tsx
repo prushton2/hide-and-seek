@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { UpdateResponse, JoinResponse, PlayerInfo, Vector2 } from '../lib/interface'; 
 
-let backend_url = "http://localhost:3333"
+let backend_url = import.meta.env.VITE_BACKEND_URL
 
 export async function join(code: string, team: string): Promise<JoinResponse> {
     let response = await axios.post(`${backend_url}/join`, JSON.stringify({

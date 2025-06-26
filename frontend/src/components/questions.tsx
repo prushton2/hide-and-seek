@@ -26,7 +26,7 @@ export function Questions({askedQuestions, callback}: {askedQuestions: string[],
         let arr: JSX.Element[] = Object.entries(QuestionsMap)
             .filter((e: [string, Question]) => e[0].startsWith(category))
             .map((q: [string, Question]) => {
-                return <button key={q[1].id} className="question" style={{backgroundColor: askedQuestions.indexOf(q[0]) >= 0 ? "#545454" : "#141414" }} onClick={(e) => {setState("showQuestion"); setQuestion(q[0])}}>
+                return <button key={q[1].id} className="question" style={{backgroundColor: askedQuestions.indexOf(q[0]) >= 0 ? "#545454" : "#141414" }} onClick={() => {setState("showQuestion"); setQuestion(q[0])}}>
                     {q[1].name}
                 </button>
             })
@@ -53,7 +53,7 @@ export function Questions({askedQuestions, callback}: {askedQuestions: string[],
         })
 
         return <div>
-            <button onClick={(e) => { setState("showQuestions"); setQuestion("") }}>Back</button>
+            <button onClick={() => { setState("showQuestions"); setQuestion("") }}>Back</button>
             <h2>{QuestionCategories[category].name}: {QuestionsMap[question].name}</h2>
             {description}
             <br />

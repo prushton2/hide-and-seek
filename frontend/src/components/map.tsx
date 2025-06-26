@@ -102,6 +102,7 @@ function Map({markers, center, circleRes, zoom, shapes, hider, seeker, bbox, upd
     const panListener = useMapEvent('move', () => {
       update(map.getCenter() as any, map.getZoom())
     })
+    console.log(zoomListener, panListener)
     return null
   }
 
@@ -123,7 +124,7 @@ function Map({markers, center, circleRes, zoom, shapes, hider, seeker, bbox, upd
       <Marker icon={hiderIcon} position={[hider.X, hider.Y] as any} />
       <Marker icon={seekerIcon} position={[seeker.X, seeker.Y] as any} />
 
-      {markers == null ? <></> : markers.map((e, i) => {
+      {markers == null ? <></> : markers.map((e) => {
         return <CircleMarker center={e.center} radius={e.radius} pathOptions={{color: e.color}}/>
       })}
 

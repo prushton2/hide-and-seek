@@ -14,15 +14,14 @@
         pname = "hide-and-seek";
         version = "0.1.0";
         src = ./.;
-        vendorHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+        npmDepsHash = "sha256-Q5ResGa0mbLbw3GOrCy0vxakK/J5PkvYCe7CjLEe7ok=";
         doCheck = false;
       };
 
       devShells.x86_64-linux.default = pkgs.mkShell {
         name = "hide-and-seek-frontend";
         packages = with pkgs; [
-          go
-          gcc
+          nodejs_24
         ];
       };
     };

@@ -124,7 +124,7 @@ async function getGeoLocation(): Promise<Vector2> {
     return new Promise((res, rej) => {
         navigator.geolocation.getCurrentPosition((pos) => {
             res({X: pos.coords.latitude, Y: pos.coords.longitude})
-        }, (err) => {
+        }, () => {
             rej({X:0,Y:0})
         }) 
     })
